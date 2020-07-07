@@ -17,6 +17,6 @@ public abstract class Command implements Serializable {
 
     abstract public boolean getRequireLogin();
     abstract public Packet execOnServer(Server server, Object args, User user);
-    abstract public Packet execOnClient(Client client, String ... args);
+    abstract public Packet execOnClient(Client client, Object ... args);
     public void serverCmd(CollectionManager collectionManager) {}
 }

@@ -1,0 +1,6 @@
+# Project exclude paths
+/out/
+.idea
+connection.properties
+lab8.iml
+postgresql-42.2.14.jar

@@ -32,8 +32,8 @@ public class SQLStatements {
                 "(?, ?)");
         login = database.prepareStatement("SELECT * FROM users WHERE login LIKE ? AND password LIKE ?");
         add_route = database.prepareStatement("INSERT INTO collection (id, name, coordinatex, coordinatey, " +
-                "locationfromx, locationfromy, locationfromz, locationtox, locationtoy, locationtoz, distance, owner) " +
-                "VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                "locationfromx, locationfromy, locationfromz, locationtox, locationtoy, locationtoz, distance, owner, " +
+                "creationDate) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         rm_route = database.prepareStatement("DELETE FROM collection WHERE id = ? AND owner = ?");
         get_id = database.prepareStatement("SELECT currval('collection_id_seq')");
         clear_user = database.prepareStatement("DELETE FROM collection WHERE owner = ?");

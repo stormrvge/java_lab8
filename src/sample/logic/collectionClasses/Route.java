@@ -1,5 +1,6 @@
 package sample.logic.collectionClasses;
 
+import javafx.util.StringConverter;
 import sample.commands.exceptions.OutOfBoundsException;
 import sample.logic.User;
 
@@ -7,6 +8,8 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 /**
@@ -17,7 +20,7 @@ public class Route implements Comparable<Route>, Serializable {
     private int id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private Coordinates coordinates; //Поле не может быть null
-    private final java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
+    private java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
     private Location from; //Поле не может быть null
     private Location to; //Поле может быть null
     private float distance; //Значение поля должно быть больше 1
@@ -33,7 +36,7 @@ public class Route implements Comparable<Route>, Serializable {
         creationDate = java.time.ZonedDateTime.now();
     }
 
-    Route(String name, Coordinates coordinates, Location from, Location to, float distance, String owner)
+    public Route(String name, Coordinates coordinates, Location from, Location to, float distance, String owner)
             throws NullPointerException, OutOfBoundsException {
         if (distance < 1) throw new OutOfBoundsException();
         if (name == null || coordinates == null || from == null || to == null)
@@ -91,6 +94,10 @@ public class Route implements Comparable<Route>, Serializable {
         this.distance = distance;
     }
 
+    public void setCreationDate(java.sql.Date date) {
+        creationDate = date.toLocalDate().atStartOfDay(ZoneId.systemDefault());
+    }
+
     public void setOwner(String owner) {
         this.owner = owner;
     }
@@ -111,33 +118,9 @@ public class Route implements Comparable<Route>, Serializable {
 
     public float getDistance() {return distance;}
 
+    public String getCreationDate() {return creationDate.toString();}
+
     public String getOwner() {return owner;}
-
-    public static Route generateObjectUserInput(User user) {
-        try {
-            Scanner input = new Scanner(System.in);
-
-            System.out.println("Enter name: ");
-            String name = input.nextLine();
-
-            Location locationFrom = Location.generateObjectUserInput();
-            Location locationTo = Location.generateObjectUserInput();
-            //LOCATION TO CAN BE NULL!
-
-            Coordinates coordinates = Coordinates.generateObjectUserInput();
-
-            System.out.println("Enter distance (float): ");
-            float distance = Float.parseFloat(input.nextLine());
-            return new Route(name, coordinates, locationFrom, locationTo, distance, user.getUsername());
-        } catch (OutOfBoundsException e) {
-            System.out.println("Out of bounds exception");
-        } catch (NumberFormatException e) {
-            System.err.println("Incorrect format for that field.");
-        } catch (NullPointerException e) {
-            System.err.println("Element cant be null");
-        }
-        return null;
-    }
 
     public static Route generateFromSQL(ResultSet res) {
         Route route = new Route();
@@ -150,6 +133,7 @@ public class Route implements Comparable<Route>, Serializable {
             route.setTo(res.getFloat(8), res.getInt(9), res.getInt(10));
             route.setDistance(res.getFloat(11));
             route.setOwner(res.getString(12));
+            route.setCreationDate(res.getDate(13));
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -168,6 +152,7 @@ public class Route implements Comparable<Route>, Serializable {
         st.setInt(9, to.getZ());
         st.setFloat(10, getDistance());
         st.setString(11, user.getUsername());
+        st.setDate(12, java.sql.Date.valueOf(creationDate.toLocalDate()));
 
         st.executeUpdate();
     }
@@ -213,5 +198,70 @@ public class Route implements Comparable<Route>, Serializable {
     public RouteFX transformToFX() throws OutOfBoundsException {
         return new RouteFX(id, name, coordinates.getX(), coordinates.getY(), from.getX(), from.getY(), from.getZ(),
                 to.getX(), to.getY(), to.getZ(), distance, owner);
+    }
+
+
+    public double getCoordX() {
+        return coordinates.getX();
+    }
+
+    public double getCoordY() {
+        return coordinates.getY();
+    }
+
+    public float getFromX() {
+        return from.getX();
+    }
+
+    public int getFromY() {
+        return from.getY();
+    }
+
+    public int getFromZ() {
+        return from.getZ();
+    }
+
+    public float getToX() {
+        return to.getX();
+    }
+
+    public int getToY() {
+        return to.getY();
+    }
+
+    public int getToZ() {
+        return to.getZ();
+    }
+
+    public void setCoordX(double coordX) throws OutOfBoundsException {
+        this.coordinates.setX(coordX);
+    }
+
+    public void setCoordY(double coordY) throws OutOfBoundsException {
+        this.coordinates.setY(coordY);
+    }
+
+    public void setFromX(float fromX) {
+        this.from.setX(fromX);
+    }
+
+    public void setFromY(int fromY) {
+        this.from.setY(fromY);
+    }
+
+    public void setFromZ(int fromZ) {
+        this.from.setZ(fromZ);
+    }
+
+    public void setToX(float toX) {
+        this.to.setX(toX);
+    }
+
+    public void setToY(int toY) {
+        this.to.setY(toY);
+    }
+
+    public void setToZ(int toZ) {
+        this.to.setZ(toZ);
     }
 }

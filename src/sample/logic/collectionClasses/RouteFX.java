@@ -27,22 +27,22 @@ public class RouteFX implements Comparable<Route>, Serializable {
             int toY, int toZ, float distance, String owner) throws NullPointerException, OutOfBoundsException {
         if (distance < 1) throw new OutOfBoundsException();
 
-        this.id = id;
-        this.name = name;
-        this.coordX = coordX;
-        this.coordY = coordY;
-        this.fromX = fromX;
-        this.fromY = fromY;
-        this.fromZ = fromZ;
-        this.toX = toX;
-        this.toY = toY;
-        this.toZ = toZ;
-        this.distance = distance;
-        this.owner = owner;
+        this.setId(id);
+        this.setName(name);
+        this.setCoordX(coordX);
+        this.setCoordY(coordY);
+        this.setFromX(fromX);
+        this.setFromY(fromY);
+        this.setFromZ(fromZ);
+        this.setToX(toX);
+        this.setToY(toY);
+        this.setToZ(toZ);
+        this.setDistance(distance);
+        this.setOwner(owner);
     }
 
     public void setName(String name) {
-        if (name == null || name.trim().equals("")) throw new NullPointerException("Name cant be null");
+        //if (name == null || name.trim().equals("")) throw new NullPointerException("Name cant be null");
         this.name = name;
     }
 
@@ -79,11 +79,11 @@ public class RouteFX implements Comparable<Route>, Serializable {
         return fromX;
     }
 
-    public float getFromY() {
+    public int getFromY() {
         return fromY;
     }
 
-    public float getFromZ() {
+    public int getFromZ() {
         return fromZ;
     }
 
@@ -91,16 +91,53 @@ public class RouteFX implements Comparable<Route>, Serializable {
         return toX;
     }
 
-    public float getToY() {
+    public int getToY() {
         return toY;
     }
 
-    public float getToZ() {
+    public int getToZ() {
         return toZ;
     }
 
     @Override
     public int compareTo(Route route) {
-        return Float.compare(distance, route.getDistance());
+        return Float.compare(getDistance(), route.getDistance());
+    }
+
+    public void setCoordX(double coordX) {
+        this.coordX = coordX;
+    }
+
+    public void setCoordY(double coordY) {
+        this.coordY = coordY;
+    }
+
+    public void setFromX(float fromX) {
+        this.fromX = fromX;
+    }
+
+    public void setFromY(int fromY) {
+        this.fromY = fromY;
+    }
+
+    public void setFromZ(int fromZ) {
+        this.fromZ = fromZ;
+    }
+
+    public void setToX(float toX) {
+        this.toX = toX;
+    }
+
+    public void setToY(int toY) {
+        this.toY = toY;
+    }
+
+    public void setToZ(int toZ) {
+        this.toZ = toZ;
+    }
+
+    @Override
+    public String toString() {
+            return ("Route [id = " + id + ", name = " + name + "]");
     }
 }

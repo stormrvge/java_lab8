@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -39,7 +38,6 @@ public class CollectionManager implements Serializable {
         route.clear();
         while (res.next()) {
             route.add(Route.generateFromSQL(res));
-            routeFX.add(Route.generateFromSQL(res));
         }
         lock.unlock();
     }
@@ -139,6 +137,7 @@ public class CollectionManager implements Serializable {
         lock.lock();
         try {
             Route oldElement = route.get(getIndexById(id));
+
             if (newElement != null) {
                 oldElement.setName(newElement.getName());
                 oldElement.setCoordinates(newElement.getCoordinates());

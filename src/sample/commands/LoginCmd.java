@@ -23,11 +23,11 @@ public class LoginCmd extends Command {
     }
 
     @Override
-    public Packet execOnClient(Client client, String ... args) {
+    public Packet execOnClient(Client client, Object ... args) {
         if (args.length != 2) {
             System.err.println("Incorrect number of arguments!");
         } else {
-            User user = new User(args[0], hash(args[1]));
+            User user = new User((String) args[0], hash((String) args[1]));
             client.setUser(user);
             return new Packet(this, null, user);
         }

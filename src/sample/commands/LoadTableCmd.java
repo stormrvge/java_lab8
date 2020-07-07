@@ -17,7 +17,7 @@ public class LoadTableCmd extends Command {
     }
 
     @Override
-    public Packet execOnClient(Client client, String ... args) {
+    public Packet execOnClient(Client client, Object ... args) {
         if (client.getUser().getLoginState()) {
             return new Packet(this, args, client.getUser());
         } else {

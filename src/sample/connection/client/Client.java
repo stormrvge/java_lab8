@@ -45,7 +45,7 @@ public class Client {
         }
     }
 
-    void handleRequest(Command command, String ... args) throws IOException, InterruptedException {
+    void handleRequest(Command command, Object ... args) throws IOException, InterruptedException {
         if (command != null) {
             Packet packet = command.execOnClient(this, args);
             sendPacket(packet);

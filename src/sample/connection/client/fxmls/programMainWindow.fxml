@@ -10,28 +10,29 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="1.7976931348623157E308" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.connection.client.ProgramMainWindow">
+<AnchorPane maxHeight="1.7976931348623157E308" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.connection.client.ProgramMainWindow">
    <children>
-      <TabPane layoutY="-1.0" prefHeight="528.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane focusTraversable="false" layoutY="-1.0" prefHeight="523.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Collection">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="507.0" prefWidth="800.0">
+              <AnchorPane focusTraversable="true" minHeight="0.0" minWidth="0.0" prefHeight="507.0" prefWidth="800.0">
                      <children>
-                        <TableView fx:id="tableCollection" layoutY="27.0" prefHeight="455.0" prefWidth="800.0">
+                        <TableView fx:id="tableCollection" editable="true" focusTraversable="false" layoutY="27.0" prefHeight="455.0" prefWidth="900.0">
                           <columns>
-                              <TableColumn fx:id="idColumn" prefWidth="36.0" text="id" />
-                            <TableColumn fx:id="nameColumn" prefWidth="114.0" text="name" />
-                            <TableColumn fx:id="coordXColumn" prefWidth="58.0" text="coord. X" />
-                              <TableColumn fx:id="coordYColumn" prefWidth="60.0" text="coord. Y" />
-                              <TableColumn fx:id="fromXColumn" prefWidth="59.0" text="from X" />
-                              <TableColumn fx:id="fromYColumn" prefWidth="63.0" text="from Y" />
-                              <TableColumn fx:id="fromZColumn" prefWidth="59.0" text="from Z" />
-                              <TableColumn fx:id="toXColumn" prefWidth="73.0" text="to X" />
-                              <TableColumn fx:id="toYColumn" prefWidth="66.0" text="to Y" />
-                              <TableColumn fx:id="toZColumn" prefWidth="75.0" text="To Z" />
-                              <TableColumn fx:id="distanceColumn" prefWidth="67.0" text="distance" />
-                              <TableColumn fx:id="ownerColumn" prefWidth="75.0" text="owner" />
+                              <TableColumn fx:id="idColumn" prefWidth="36.0" resizable="false" text="id" />
+                            <TableColumn fx:id="nameColumn" onEditCommit="#nameEdit" prefWidth="100.0" text="name" />
+                            <TableColumn fx:id="coordXColumn" onEditCommit="#coordXEdit" prefWidth="70.0" resizable="false" text="coord. X" />
+                              <TableColumn fx:id="coordYColumn" onEditCommit="#coordYEdit" prefWidth="70.0" resizable="false" text="coord. Y" />
+                              <TableColumn fx:id="fromXColumn" onEditCommit="#fromXEdit" prefWidth="70.0" resizable="false" text="from X" />
+                              <TableColumn fx:id="fromYColumn" onEditCommit="#fromYEdit" prefWidth="70.0" resizable="false" text="from Y" />
+                              <TableColumn fx:id="fromZColumn" onEditCommit="#fromZEdit" prefWidth="70.0" resizable="false" text="from Z" />
+                              <TableColumn fx:id="toXColumn" onEditCommit="#toXEdit" prefWidth="70.0" resizable="false" text="to X" />
+                              <TableColumn fx:id="toYColumn" onEditCommit="#toYEdit" prefWidth="70.0" resizable="false" text="to Y" />
+                              <TableColumn fx:id="toZColumn" onEditCommit="#toZEdit" prefWidth="60.0" resizable="false" text="To Z" />
+                              <TableColumn fx:id="distanceColumn" onEditCommit="#distanceEdit" prefWidth="60.0" resizable="false" text="distance" />
+                              <TableColumn fx:id="creationDate" resizable="false" text="Creat. Date" />
+                              <TableColumn fx:id="ownerColumn" prefWidth="73.0" text="owner" />
                           </columns>
                         </TableView>
                      </children></AnchorPane>
@@ -58,23 +59,23 @@
             </Text>
          </children>
       </HBox>
-      <Button fx:id="logout" layoutX="729.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="Log out" />
-      <HBox layoutX="38.0" layoutY="559.0" prefHeight="27.0" prefWidth="725.0" spacing="20.0">
+      <Button fx:id="logoutButton" layoutX="830.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="Log out" />
+      <HBox layoutX="89.0" layoutY="522.0" prefHeight="27.0" prefWidth="725.0" spacing="20.0">
          <children>
-            <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Remove" />
-            <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Unique distance" />
-            <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Help" />
-            <Button layoutX="304.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Sort" />
-            <Button layoutX="451.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Execute script" />
+            <Button fx:id="addElementButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Add element" />
+            <Button fx:id="addIfMaxButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Add If Max" />
+            <Button fx:id="infoButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Info" />
+            <Button fx:id="clearCollectionButton" layoutX="304.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Clear collection" />
+            <Button fx:id="filterByDistanceButton" layoutX="451.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Filter by distance" />
          </children>
       </HBox>
-      <HBox layoutX="38.0" layoutY="527.0" prefHeight="27.0" prefWidth="725.0" spacing="20.0">
+      <HBox layoutX="89.0" layoutY="554.0" prefHeight="27.0" prefWidth="725.0" spacing="20.0">
          <children>
-            <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Add element" />
-            <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Add If Max" />
-            <Button mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Info" />
-            <Button layoutX="304.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Clear collection" />
-            <Button layoutX="451.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Filter by distance" />
+            <Button fx:id="removeButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Remove" />
+            <Button fx:id="uniqueDistanceButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Unique distance" />
+            <Button fx:id="helpButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Help" />
+            <Button fx:id="sortButton" layoutX="304.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Sort" />
+            <Button fx:id="executeScriptButton" layoutX="451.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Execute script" />
          </children>
       </HBox>
    </children>
