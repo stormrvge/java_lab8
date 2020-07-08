@@ -5,9 +5,9 @@ import sample.connection.server.Server;
 import sample.logic.Packet;
 import sample.logic.User;
 
-public class ShowCmd extends Command {
-    public ShowCmd() {
-        super("show", true);
+public class UniqueDistanceCmd extends Command {
+    public UniqueDistanceCmd() {
+        super("unique distance", true);
     }
 
     public boolean getRequireLogin() {
@@ -26,6 +26,6 @@ public class ShowCmd extends Command {
 
     @Override
     public Packet execOnServer(Server server, Object args, User user) {
-        return new Packet(null, server.getManager().show(), null);
+        return new Packet(null, server.getManager().print_unique_distance(), null);
     }
 }

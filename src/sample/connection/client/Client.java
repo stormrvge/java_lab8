@@ -17,6 +17,7 @@ public class Client {
     private final int port;
     private final String hostname;
     private static boolean close = false;
+    private Packet packet;
 
     private static Object answer;
     private static Boolean boolAnswer;
@@ -47,7 +48,7 @@ public class Client {
 
     void handleRequest(Command command, Object ... args) throws IOException, InterruptedException {
         if (command != null) {
-            Packet packet = command.execOnClient(this, args);
+            packet = command.execOnClient(this, args);
             sendPacket(packet);
         }
     }
@@ -159,4 +160,7 @@ public class Client {
     }
 
     public Boolean getBoolAnswer() { return boolAnswer; }
+    public String getCommandName() {
+        return packet.getCommand().getName();
+    }
 }

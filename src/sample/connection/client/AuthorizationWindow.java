@@ -83,7 +83,7 @@ public class AuthorizationWindow extends Application {
         String[] args = new String[] {textField.getText(), passField.getText()};
         LoginCmd cmd = new LoginCmd();
         try {
-            client.handleRequest(cmd, args);
+            client.handleRequest(cmd, (Object[]) args);
             if (client.getUser().getLoginState()) {
                 Stage stage = (Stage) log.getScene().getWindow();
                 stage.close();

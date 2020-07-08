@@ -17,6 +17,13 @@ public class Packet implements Serializable {
         this.user = user;
     }
 
+    public Packet(Command command, Object argument, User user, Boolean boolAnswer) {
+        this.command = command;
+        this.argument = argument;
+        this.user = user;
+        this.boolAnswer = boolAnswer;
+    }
+
     public Packet(Boolean boolAnswer) {
         this.command = null;
         this.argument = null;

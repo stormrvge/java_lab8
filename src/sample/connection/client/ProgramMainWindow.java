@@ -3,14 +3,14 @@ package sample.connection.client;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.text.Text;
@@ -19,9 +19,7 @@ import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
-import sample.commands.Command;
-import sample.commands.LoadTableCmd;
-import sample.commands.UpdateIdCmd;
+import sample.commands.*;
 import sample.commands.exceptions.OutOfBoundsException;
 import sample.logic.collectionClasses.Route;
 import java.io.IOException;
@@ -54,18 +52,21 @@ public class ProgramMainWindow extends Application {
     @FXML private TableColumn<Route, String> ownerColumn;
 
     @FXML private Text username;
+    @FXML private TextField filteringText;
+
+    @FXML private ChoiceBox<String> filterChoiceBox;
 
     @FXML private Button logoutButton;
     @FXML private Button addElementButton;
-    @FXML private Button addIfMaxButton;
     @FXML private Button infoButton;
     @FXML private Button clearCollectionButton;
     @FXML private Button filterByDistanceButton;
     @FXML private Button removeButton;
     @FXML private Button uniqueDistanceButton;
-    @FXML private Button helpButton;
+    @FXML private Button showButton;
     @FXML private Button sortButton;
     @FXML private Button executeScriptButton;
+    @FXML private Button helpButton;
 
     @Override
     public void start(Stage mainWindow) throws Exception{
@@ -83,12 +84,18 @@ public class ProgramMainWindow extends Application {
         doubleStringConverter = new DoubleStringConverter();
         floatStringConverter = new FloatStringConverter();
         integerStringConverter = new IntegerStringConverter();
+
         loadTable();
+        filtering();
 
         //BUTTONS ACTION LISTENERS
         logoutButton.setOnAction(this::logoutButton);
         addElementButton.setOnAction(this::addElementButton);
-        addIfMaxButton.setOnAction(this::addIfMaxButton);
+        showButton.setOnAction(this::showButton);
+        uniqueDistanceButton.setOnAction(this::uniqueDistanceButton);
+        infoButton.setOnAction(this::infoButton);
+        removeButton.setOnAction(this::removeButton);
+        helpButton.setOnAction(this::helpButton);
 
         //EDITABLE COLS
         nameColumn.setOnEditCommit(this::nameEdit);
@@ -101,15 +108,69 @@ public class ProgramMainWindow extends Application {
         toYColumn.setOnEditCommit(this::toYEdit);
         toZColumn.setOnEditCommit(this::toZEdit);
         distanceColumn.setOnEditCommit(this::distanceEdit);
+
     }
 
-    private void addIfMaxButton(ActionEvent actionEvent) {
+    private void helpButton(ActionEvent actionEvent) {
         try {
             Stage stage = new Stage();
+            HelpCmd cmd = new HelpCmd();
+            client.handleRequest(cmd);
 
-            AddElementWindow addElementWindow = new AddElementWindow();
-            addElementWindow.start(stage);
-        } catch (Exception ignored) {}
+            TextedCmd textedCmdWindow = new TextedCmd();
+            textedCmdWindow.start(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void removeButton(ActionEvent actionEvent) {
+        try {
+            Route route = tableCollection.getSelectionModel().getSelectedItem();
+            RemoveCmd cmd = new RemoveCmd();
+            client.handleRequest(cmd, route.getId());
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void infoButton(ActionEvent actionEvent) {
+        try {
+            Stage stage = new Stage();
+            InfoCmd cmd = new InfoCmd();
+            client.handleRequest(cmd);
+
+            TextedCmd textedCmdWindow = new TextedCmd();
+            textedCmdWindow.start(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void uniqueDistanceButton(ActionEvent actionEvent) {
+        try {
+            Stage stage = new Stage();
+            UniqueDistanceCmd cmd = new UniqueDistanceCmd();
+            client.handleRequest(cmd);
+
+            TextedCmd textedCmdWindow = new TextedCmd();
+            textedCmdWindow.start(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showButton(ActionEvent actionEvent) {
+        try {
+            Stage stage = new Stage();
+            ShowCmd cmd = new ShowCmd();
+            client.handleRequest(cmd);
+
+            TextedCmd textedCmdWindow = new TextedCmd();
+            textedCmdWindow.start(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void addElementButton(ActionEvent actionEvent) {
@@ -361,8 +422,43 @@ public class ProgramMainWindow extends Application {
         }
     }
 
-    public void addInTable(Route route) {
-        routesData.add(route);
-        tableCollection.setItems(routesData);
+    private void filtering() {
+        ObservableList<String> filteringBy = FXCollections.observableArrayList("id", "name", "distance",
+                "creation date", "owner");
+        filterChoiceBox.setValue("id");
+        filterChoiceBox.setItems(filteringBy);
+
+        FilteredList<Route> filteredList = new FilteredList<>(routesData, p -> true);
+        filteringText.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredList.setPredicate(route -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+
+
+                if (filterChoiceBox.getValue().equals("name") &&
+                        route.getName().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (filterChoiceBox.getValue().equals("owner") &&
+                        route.getOwner().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (filterChoiceBox.getValue().equals("distance") &&
+                        Float.toString(route.getDistance()).contains(lowerCaseFilter)) {
+                    return true;
+                } else if (filterChoiceBox.getValue().equals("creation date") &&
+                        route.getCreationDate().contains(newValue)) {
+                    return true;
+                } else if (filterChoiceBox.getValue().equals("id") &&
+                        Integer.toString(route.getId()).contains(newValue)) {
+                    return true;
+                }
+                return false;
+            });
+        });
+        SortedList<Route> sortedList = new SortedList<>(filteredList);
+        sortedList.comparatorProperty().bind(tableCollection.comparatorProperty());
+        tableCollection.setItems(sortedList);
     }
 }

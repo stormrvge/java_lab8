@@ -4,28 +4,29 @@ import sample.connection.client.Client;
 import sample.connection.server.Server;
 import sample.logic.Packet;
 import sample.logic.User;
+import sample.logic.collectionClasses.Route;
 
-public class ShowCmd extends Command {
-    public ShowCmd() {
-        super("show", true);
+public class AddIfMaxCmd extends Command {
+    public AddIfMaxCmd() {
+        super("add if max", true);
     }
 
     public boolean getRequireLogin() {
         return require_login;
     }
 
+    public Packet execOnServer(Server server, Object object, User user) {
+        return new Packet(null, null,
+                null, server.getManager().add_if_max(server, (Route) object, user));
+    }
+
     @Override
     public Packet execOnClient(Client client, Object ... args) {
         if (client.getUser().getLoginState()) {
-            return new Packet(this, args, client.getUser());
+            return new Packet(this, args[0], client.getUser());
         } else {
             System.err.println("You must login!");
             return null;
         }
-    }
-
-    @Override
-    public Packet execOnServer(Server server, Object args, User user) {
-        return new Packet(null, server.getManager().show(), null);
     }
 }

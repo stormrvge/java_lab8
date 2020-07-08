@@ -9,7 +9,7 @@ import sample.logic.collectionClasses.Route;
 public class AddCmd extends Command {
 
     public AddCmd() {
-        super(true);
+        super("add", true);
     }
 
     public boolean getRequireLogin() {
@@ -17,7 +17,8 @@ public class AddCmd extends Command {
     }
 
     public Packet execOnServer(Server server, Object object, User user) {
-        return new Packet(null, server.getManager().add(server, (Route) object, user), null);
+        return new Packet(null, null,
+                null, server.getManager().add(server, (Route) object, user));
     }
 
     @Override

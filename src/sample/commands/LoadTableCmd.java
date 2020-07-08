@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class LoadTableCmd extends Command {
     public LoadTableCmd() {
-        super(true);
+        super("load table", true);
     }
 
     public boolean getRequireLogin() {

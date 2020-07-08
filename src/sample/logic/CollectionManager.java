@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -83,7 +84,7 @@ public class CollectionManager implements Serializable {
             String[] className = arrayListType.replace("<", " ").
                     replace(">", " ").split("[ .]");
             lock.unlock();
-            return ("Type: "  + className[5] + ", initializing date: " + date + ", collection size: " + route.size());
+            return ("Type: "  + className[6] + ", initializing date: " + date.format(DateTimeFormatter.ISO_LOCAL_DATE) + ", collection size: " + route.size());
         } catch (NoSuchFieldException e) {
             lock.unlock();
             return ("Problem with general class. Cant find type of class!");
@@ -110,7 +111,7 @@ public class CollectionManager implements Serializable {
      * This method add's a new element to collection.
      * bounds for coordinates and location class.
      */
-    public String add(Server server, Route object, User user) {
+    public boolean add(Server server, Route object, User user) {
         try {
             lock.lock();
             route.add(object);
@@ -118,15 +119,15 @@ public class CollectionManager implements Serializable {
             server.getSqlStatements().save(object, user);
             object.setId(server.getSqlStatements().getId());
             lock.unlock();
-            return "Element was added";
+            return true;
         } catch (SQLException e) {
             lock.unlock();
             System.out.println(e.getMessage());
         } catch (NullPointerException e) {
-            return e.getMessage();
+            return false;
         }
         lock.unlock();
-        return "Element wasn't added";
+        return false;
     }
 
     /**
@@ -180,6 +181,7 @@ public class CollectionManager implements Serializable {
             lock.unlock();
             return (e.getMessage());
         }
+
         /*
             route = route.stream()
                     .filter(x -> (x.getId() != id || !x.getOwner().equals(user.getUsername())))
@@ -208,74 +210,49 @@ public class CollectionManager implements Serializable {
 
 
     /**
-     * This method delete element from collection by index.
-     * @param index - argument from console.
-     */
-    public String remove_at(Server server, int index, User user) {
-        lock.lock();
-        try {
-            int id = route.get(index).getId();
-            removeByOwner(user.getUsername(), id);
-
-            server.getSqlStatements().remove_route(id, user.getUsername());
-            lock.unlock();
-            return ("Element with " + id + " was removed!");
-        } catch (PermissionDeniedException e) {
-            lock.unlock();
-            return "Permission denied";
-        } catch (IndexOutOfBoundsException | OutOfBoundsException e) {
-            lock.unlock();
-            return "No element with such id";
-        } catch (SQLException e) {
-            lock.unlock();
-            return e.getMessage();
-        }
-    }
-
-    /**
      * This method will add new element, if distance of new element is maximal in collection.
      */
-    public String add_if_max(Server server, Route object, User user) {
+    public boolean add_if_max(Server server, Route object, User user) {
         lock.lock();
         try {
             if(route.size() > 0 && route.stream().max(Comparator.naturalOrder()).get().compareTo(object) > 0) {
                 lock.unlock();
-                return "That element isn't maximal in collection.";
+                return false;
             } else {
                 server.getSqlStatements().save(object, user);
                 object.setId(server.getSqlStatements().getId());
                 route.add(object);
                 lock.unlock();
-                return "Element has been added successfully.";
+                return true;
             }
         } catch (SQLException e) {
             lock.unlock();
             System.err.println(e.getMessage());
         }
         lock.unlock();
-        return "Element wasn't added";
+        return false;
     }
 
 
-    public String add_if_min(Server server, Route object, User user) {
+    public boolean add_if_min(Server server, Route object, User user) {
         lock.lock();
         try {
             if(route.size() > 0 && route.stream().min(Comparator.naturalOrder()).get().compareTo(object) < 0) {
                 lock.unlock();
-                return "That element isn't minimal in collection.";
+                return false;
             } else {
                 server.getSqlStatements().save(object, user);
                 object.setId(server.getSqlStatements().getId());
                 route.add(object);
                 lock.unlock();
-                return "Element has been added successfully.";
+                return true;
             }
         } catch (SQLException e) {
             lock.unlock();
             System.err.println(e.getMessage());
         }
         lock.unlock();
-        return "Element wasn't added";
+        return false;
     }
 
 
