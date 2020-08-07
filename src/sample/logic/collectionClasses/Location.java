@@ -1,7 +1,6 @@
 package sample.logic.collectionClasses;
 
 import java.io.Serializable;
-import java.util.Scanner;
 
 /**
  * Class which we using like a field in collection. Contains 3 coordinates.
@@ -74,17 +73,5 @@ public class Location implements Serializable {
     @Override
     public String toString() {
         return ("{x: " + x + ", y: " + y + ", z: " + z + "}");
-    }
-
-    public static Location generateObjectUserInput() throws NullPointerException, NumberFormatException {
-        Scanner input = new Scanner(System.in);
-
-        System.out.println("Enter coordinate x (Float, Location from): ");
-        Float x_From = Float.parseFloat(input.nextLine());
-        System.out.println("Enter coordinate y (Integer, Location from): ");
-        Integer y_From = Integer.parseInt(input.nextLine());
-        System.out.println("Enter coordinate z (int, Location from): ");
-        int z_From = Integer.parseInt(input.nextLine());
-        return new Location(x_From, y_From, z_From);
     }
 }

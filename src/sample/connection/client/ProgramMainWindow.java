@@ -442,6 +442,7 @@ public class ProgramMainWindow extends Application {
     }
 
     public static void setTable(ArrayList<Route> routes) {
+        routesData.clear();
         routes = routes.stream().sorted(Comparator.comparing(Route::getId))
                 .collect(Collectors.toCollection(ArrayList::new));
         routesData.addAll(routes);

@@ -3,7 +3,6 @@ package sample.connection.client.threads;
 import sample.connection.client.Client;
 import sample.connection.client.ProgramMainWindow;
 import sample.logic.Packet;
-import sample.logic.User;
 import sample.logic.collectionClasses.Route;
 
 import java.io.ByteArrayInputStream;
@@ -15,34 +14,26 @@ import java.util.ArrayList;
 
 public class MessageReader extends Thread {
     private final SocketChannel channel;
-    private Client client;
+    private final Client client;
 
     private final ByteBuffer msg;
-    private Object ans;
 
     private Object answer;
     private Boolean boolAnswer;
-    private  Boolean sync;
-    private final User user;
 
-    public MessageReader(Client client, SocketChannel channel, User user) {
+    public MessageReader(Client client, SocketChannel channel) {
         this.client = client;
         this.channel = channel;
-        this.user = user;
         msg = ByteBuffer.allocate(4096);
     }
 
     @Override
     public void run() {
-        try {
-            readMessage();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        readMessage();
     }
 
 
-    public void readMessage() throws IOException {
+    public void readMessage() {
         if (channel.isConnected()) {
             while (true) {
                 try {
@@ -54,12 +45,12 @@ public class MessageReader extends Thread {
                         Packet packet = (Packet) deserialize(msg.array());
                         answer = packet.getArgument();
                         boolAnswer = packet.getBoolAnswer();
-                        sync = packet.getSync();
+                        Boolean sync = packet.getSync();
 
                         client.getUser().setLoginState(packet.isLogin());
 
                         if (sync) {
-                            ans = packet.getArgument();
+                            Object ans = packet.getArgument();
                             ProgramMainWindow.setTable((ArrayList<Route>) ans);
                         } else {
                             client.getAtomicPacket().set(packet);
@@ -79,12 +70,7 @@ public class MessageReader extends Thread {
         return objStream.readObject();
     }
 
-    public void setAnswer(Packet answer) {
-        this.answer = answer;
-    }
-
     public Object getAnswer() { return answer; }
     public Boolean getBoolAnswer() { return boolAnswer; }
-    public Boolean getSyncBoolean() { return sync; }
-    public ByteBuffer getMsg() { return msg; }
+
 }

@@ -195,12 +195,6 @@ public class Route implements Comparable<Route>, Serializable {
         }
     }
 
-    public RouteFX transformToFX() throws OutOfBoundsException {
-        return new RouteFX(id, name, coordinates.getX(), coordinates.getY(), from.getX(), from.getY(), from.getZ(),
-                to.getX(), to.getY(), to.getZ(), distance, owner);
-    }
-
-
     public double getCoordX() {
         return coordinates.getX();
     }

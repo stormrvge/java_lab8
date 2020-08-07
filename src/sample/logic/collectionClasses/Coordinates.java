@@ -3,7 +3,6 @@ package sample.logic.collectionClasses;
 import sample.commands.exceptions.OutOfBoundsException;
 
 import java.io.Serializable;
-import java.util.Scanner;
 
 /**
  * Class with coordinates which we using in collection like field.
@@ -81,15 +80,4 @@ public class Coordinates implements Serializable {
         return ("{x: " + x + ", y: " + y + "}");
     }
 
-    public static Coordinates generateObjectUserInput()
-            throws OutOfBoundsException, NullPointerException, NumberFormatException {
-        Scanner input = new Scanner(System.in);
-
-        System.out.println("Enter coordinate x (Double): ");
-        double x = Double.parseDouble(input.nextLine());
-        System.out.println("Enter coordinate у (double): ");
-        double y = Double.parseDouble(input.nextLine());
-
-        return new Coordinates(x, y);
-    }
 }

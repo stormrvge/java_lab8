@@ -24,7 +24,6 @@ public class Reader extends Thread {
     private Handler handler;
     private ObjectOutputStream out;
 
-    private Packet packet;
     private User user;
     private Boolean isLogin;
 
@@ -43,7 +42,7 @@ public class Reader extends Thread {
                 handlerExecutor = Executors.newFixedThreadPool(10);
 
                 while (true) {
-                    packet = readMessage();
+                    Packet packet = readMessage();
                     Command commandServer = packet.getCommand();
                     user = packet.getUser();
                     isLogin = server.getSqlStatements().login(user);
@@ -63,10 +62,6 @@ public class Reader extends Thread {
                         if (commandServer.isNeedSync()) {
                             server.sync();
                         }
-                        /*
-
-                         */
-
                     } else {
                         Sender sender = new Sender(null, out, isLogin);
                         senderExecutor.submit(sender);
@@ -92,15 +87,14 @@ public class Reader extends Thread {
     }
 
 
-    public void sync() throws InterruptedException, ExecutionException {
+    public void sync() throws InterruptedException, ExecutionException, IOException {
         Packet syncPacket = new Packet(new RefreshTableCmd(), "SYNC CMD", user);
 
         handler = new Handler(syncPacket, server);
         Future<Packet> result = handlerExecutor.submit(handler);
-
         Packet answerToClient = result.get();
 
-        Sender sender = new Sender(answerToClient, out, isLogin);
+        Sender sender = new Sender(answerToClient, new ObjectOutputStream(clientSocket.getOutputStream()), isLogin);
         senderExecutor.submit(sender);
     }
 }

@@ -2,7 +2,6 @@ package sample.connection.client;
 
 import sample.commands.*;
 import sample.connection.client.threads.MessageReader;
-import sample.connection.client.threads.SyncThread;
 import sample.logic.Packet;
 import sample.logic.User;
 
@@ -19,18 +18,10 @@ public class Client {
     private SocketAddress addr;
     private final int port;
     private final String hostname;
-    private static boolean close = false;
-    private Packet packet;
-
-    private MessageReader messageReader;
-    private SyncThread syncThread;
-    private ByteBuffer msg;
-
-    private static Object answer;
-    private static Boolean boolAnswer;
-    private static Boolean sync;
     private User user;
 
+    private MessageReader messageReader;
+    private Packet packet;
     public Packet ansPacket;
     private final AtomicReference<Packet> atomicPacket = new AtomicReference<>();
 
@@ -46,7 +37,7 @@ public class Client {
             try {
                 addr = new InetSocketAddress(hostname, port);
                 channel = SocketChannel.open(addr);
-                channel.configureBlocking(false);    //false
+                channel.configureBlocking(false);
 
             } catch (SocketException e) {
                 System.out.println("Cant connect to the connection.server. Server is down.");
@@ -56,7 +47,7 @@ public class Client {
             System.out.println(e.getMessage());
         }
 
-        messageReader = new MessageReader(this, channel, user);
+        messageReader = new MessageReader(this, channel);
         messageReader.start();
     }
 
@@ -86,7 +77,6 @@ public class Client {
                     atomicPacket.set(null);
                 }
             }
-            //messageReader.readMessage();
         }
     }
 
@@ -118,16 +108,6 @@ public class Client {
         }
     }
 
-    public void disconnect()  {
-        close = true;
-        try {
-            channel.close();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-        System.out.println("Client was closed...");
-    }
-
     public void setUser(User user) {
         this.user = user;
     }
@@ -152,38 +132,6 @@ public class Client {
         return atomicPacket;
     }
 }
-
-
-
-
-
-
-/*
-    new Thread(() -> {
-        msg = ByteBuffer.allocate(4096);
-        while (true) {
-            try {
-                Thread.sleep(100);
-                channel.read(msg);
-                if (msg.position() > 0) {       //position?
-                    Packet packet = (Packet) deserialize(msg.array());
-                    if (packet.getSync()) {
-                        ans = packet.getArgument();
-                        ProgramMainWindow.setTable((ArrayList<Route>) ans);
-                    } else {
-                        user.setLoginState(packet.isLogin());       //?????????
-
-                        atomicPacket.set(packet);
-                    }
-                }
-            } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }).start();
-     */
-
-
 
 
 

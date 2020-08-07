@@ -5,7 +5,6 @@ import sample.connection.server.Server;
 import sample.logic.Packet;
 import sample.logic.User;
 
-import java.sql.SQLException;
 
 public class RefreshTableCmd extends Command {
     public RefreshTableCmd() {

@@ -20,16 +20,18 @@ import java.util.concurrent.ExecutionException;
 
 public class Server {
     private final int port;
-    private static Socket clientSocket;
+
     private ArrayList<Socket> socketArrayList;
     private HashMap<Socket, Reader> readerHashMap;
-    private static ServerSocket server;
+
+    private ServerSocket server;
+    private CollectionManager manager;
+    private Connection database;
     private SQLStatements sqlStatements;
 
     private final File connectionProperties;
     private final Properties properties;
-    private Connection database;
-    private static CollectionManager manager;
+
     private int numOfClients;
 
 
@@ -56,7 +58,7 @@ public class Server {
             readerHashMap = new HashMap<>(20);
             socketArrayList = new ArrayList<>(20);
             Invoker invoker = new Invoker();
-            manager = new CollectionManager();;
+            manager = new CollectionManager();
             sqlStatements = new SQLStatements(database, manager);
             sqlStatements.load();
 
@@ -66,7 +68,7 @@ public class Server {
             while (!server.isClosed()) {
                 if (!inputCmd.ready()) {
                     try {
-                        clientSocket = server.accept();
+                        Socket clientSocket = server.accept();
                         if (clientSocket != null) {
                             socketArrayList.add(clientSocket);
                             numOfClients++;
@@ -80,7 +82,7 @@ public class Server {
                 else if (inputCmd.ready()) {
                     Command command = invoker.createCommand(inputCmd.readLine().trim());
                     try {
-                        command.serverCmd(manager);
+                        command.serverCmd();
                     }  catch (NullPointerException ignored) {}
                 }
             }
@@ -125,22 +127,8 @@ public class Server {
         }
     }
 
-    public static String parseIOException(IOException e) {
-        String s = e.getMessage();
-
-        if (s.contains("(") && s.contains(")")) {
-            s = s.substring(s.indexOf("(") + 1);
-            s = s.substring(0, s.indexOf(")"));
-        }
-        return s;
-    }
-
     public CollectionManager getManager() {
         return manager;
-    }
-
-    public HashMap<Socket, Reader> getReaderList() {
-        return readerHashMap;
     }
 
     public Connection getDataBase() {
