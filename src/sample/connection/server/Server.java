@@ -12,11 +12,17 @@ import java.net.SocketTimeoutException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 public class Server {
     private final int port;
     private static Socket clientSocket;
+    private ArrayList<Socket> socketArrayList;
+    private HashMap<Socket, Reader> readerHashMap;
     private static ServerSocket server;
     private SQLStatements sqlStatements;
 
@@ -47,6 +53,8 @@ public class Server {
 
             database = DriverManager.getConnection(url, user, password);
 
+            readerHashMap = new HashMap<>(20);
+            socketArrayList = new ArrayList<>(20);
             Invoker invoker = new Invoker();
             manager = new CollectionManager();;
             sqlStatements = new SQLStatements(database, manager);
@@ -60,7 +68,11 @@ public class Server {
                     try {
                         clientSocket = server.accept();
                         if (clientSocket != null) {
-                            sample.connection.server.threads.Reader reader = new Reader(this, clientSocket);
+                            socketArrayList.add(clientSocket);
+                            numOfClients++;
+
+                            Reader reader = new Reader(this, clientSocket);
+                            readerHashMap.put(clientSocket, reader);
                             reader.start();
                         }
                     } catch (SocketTimeoutException ignored) {}
@@ -79,18 +91,30 @@ public class Server {
         }
     }
 
-    public static void closeConnection() {
+    public void sync() throws ExecutionException, InterruptedException, IOException {
+        for(Map.Entry<Socket, Reader> entry : readerHashMap.entrySet()) {
+            Reader reader = entry.getValue();
+            reader.sync();
+        }
+    }
+
+    public void closeConnection(Socket clientSocket) {
         try {
             clientSocket.close();
+            readerHashMap.remove(clientSocket);
+            socketArrayList.remove(clientSocket);
+            --numOfClients;
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public static void stopServer() {
+    public void stopServer() {
         try {
-            if (clientSocket != null) {
-                closeConnection();
+            if (!socketArrayList.isEmpty()) {
+                for (Socket sockets : socketArrayList) {
+                    sockets.close();
+                }
             }
             server.close();
             System.out.println("Server was stopped!");
@@ -115,6 +139,10 @@ public class Server {
         return manager;
     }
 
+    public HashMap<Socket, Reader> getReaderList() {
+        return readerHashMap;
+    }
+
     public Connection getDataBase() {
         return database;
     }
@@ -123,9 +151,5 @@ public class Server {
 
     public int getNumOfClients() {
         return numOfClients;
-    }
-
-    public void addNumOfClients() {
-        this.numOfClients++;
     }
 }

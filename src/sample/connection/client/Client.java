@@ -1,6 +1,8 @@
 package sample.connection.client;
 
 import sample.commands.*;
+import sample.connection.client.threads.MessageReader;
+import sample.connection.client.threads.SyncThread;
 import sample.logic.Packet;
 import sample.logic.User;
 
@@ -10,18 +12,27 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Client {
-    private static SocketChannel channel;
+    private SocketChannel channel;
     private SocketAddress addr;
     private final int port;
     private final String hostname;
     private static boolean close = false;
     private Packet packet;
 
+    private MessageReader messageReader;
+    private SyncThread syncThread;
+    private ByteBuffer msg;
+
     private static Object answer;
     private static Boolean boolAnswer;
+    private static Boolean sync;
     private User user;
+
+    public Packet ansPacket;
+    private final AtomicReference<Packet> atomicPacket = new AtomicReference<>();
 
     public Client(String hostname, int port) {
         this.hostname = hostname;
@@ -35,7 +46,7 @@ public class Client {
             try {
                 addr = new InetSocketAddress(hostname, port);
                 channel = SocketChannel.open(addr);
-                channel.configureBlocking(false);
+                channel.configureBlocking(false);    //false
 
             } catch (SocketException e) {
                 System.out.println("Cant connect to the connection.server. Server is down.");
@@ -44,6 +55,9 @@ public class Client {
         } catch (NullPointerException | IOException e) {
             System.out.println(e.getMessage());
         }
+
+        messageReader = new MessageReader(this, channel, user);
+        messageReader.start();
     }
 
     void handleRequest(Command command, Object ... args) throws IOException, InterruptedException {
@@ -65,42 +79,14 @@ public class Client {
                 reconnect();
                 System.err.println(e.getMessage());
             }
-            readMessage();
-        }
-    }
 
-    private void readMessage() throws IOException {
-        ByteBuffer msg = ByteBuffer.allocate(4096);
-        msg.clear();
-
-        if (channel.isConnected()) {
-            channel.read(msg);
-
-            if (msg.position() == 0) {
-                System.out.println("Now connection.server is locked. Wait please...");
-                try {
-                    Thread.sleep(1000);
-                    readMessage();
-                } catch (InterruptedException e) {
-                    System.err.println(e.getMessage());
+            for(int i = 0; i < 50; i++) {
+                if (atomicPacket.get() != null) {
+                    ansPacket = atomicPacket.get();
+                    atomicPacket.set(null);
                 }
             }
-
-            try {
-                Packet packet = (Packet) deserialize(msg.array());
-                answer = packet.getArgument();
-                boolAnswer = packet.getBoolAnswer();
-
-                user.setLoginState(packet.isLogin());
-                if (answer != null && user.getLoginState()) {
-                    System.out.println(answer.toString());
-                }
-                else {
-                    System.out.println("Null string");
-                }
-            } catch (ClassNotFoundException e) {
-                System.err.println(e.getMessage());
-            }
+            //messageReader.readMessage();
         }
     }
 
@@ -112,12 +98,7 @@ public class Client {
         return  b.toByteArray();
     }
 
-    private static Object deserialize(byte[] bytes) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream byteArrayInput = new ByteArrayInputStream(bytes);
-        ObjectInputStream objStream = new ObjectInputStream(byteArrayInput);
 
-        return objStream.readObject();
-    }
 
     private void reconnect() {
         System.out.println("Reconnecting...");
@@ -137,7 +118,7 @@ public class Client {
         }
     }
 
-    public static void disconnect()  {
+    public void disconnect()  {
         close = true;
         try {
             channel.close();
@@ -155,12 +136,62 @@ public class Client {
         return this.user;
     }
 
-    public Object getAnswer() {
-        return answer;
-    }
-
-    public Boolean getBoolAnswer() { return boolAnswer; }
     public String getCommandName() {
         return packet.getCommand().getName();
     }
+
+    public MessageReader getMessageReader() {
+        return messageReader;
+    }
+
+    public Packet getAnsPacket() {
+        return ansPacket;
+    }
+
+    public AtomicReference<Packet> getAtomicPacket() {
+        return atomicPacket;
+    }
 }
+
+
+
+
+
+
+/*
+    new Thread(() -> {
+        msg = ByteBuffer.allocate(4096);
+        while (true) {
+            try {
+                Thread.sleep(100);
+                channel.read(msg);
+                if (msg.position() > 0) {       //position?
+                    Packet packet = (Packet) deserialize(msg.array());
+                    if (packet.getSync()) {
+                        ans = packet.getArgument();
+                        ProgramMainWindow.setTable((ArrayList<Route>) ans);
+                    } else {
+                        user.setLoginState(packet.isLogin());       //?????????
+
+                        atomicPacket.set(packet);
+                    }
+                }
+            } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }).start();
+     */
+
+
+
+
+
+
+
+
+
+
+
+
+

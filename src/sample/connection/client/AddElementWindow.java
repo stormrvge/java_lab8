@@ -78,7 +78,7 @@ public class AddElementWindow extends Application  {
             if (addIfMaxCheck.isSelected()) {
                 AddIfMaxCmd cmd = new AddIfMaxCmd();
                 client.handleRequest(cmd, addElement(user));
-                if (client.getBoolAnswer()) {
+                if (client.getMessageReader().getBoolAnswer()) {
                     msgText.setFill(Color.GREEN);
                     msgText.setText("Element added!");
                 } else {
@@ -88,7 +88,7 @@ public class AddElementWindow extends Application  {
             } else if (addIfMinCheck.isSelected()) {
                 AddIfMinCmd cmd = new AddIfMinCmd();
                 client.handleRequest(cmd, addElement(user));
-                if (client.getBoolAnswer()) {
+                if (client.getMessageReader().getBoolAnswer()) {
                     msgText.setFill(Color.GREEN);
                     msgText.setText("Element added!");
                 } else {
@@ -98,7 +98,7 @@ public class AddElementWindow extends Application  {
             } else {
                 AddCmd cmd = new AddCmd();
                 client.handleRequest(cmd, addElement(user));
-                if (client.getBoolAnswer()) {
+                if (client.getMessageReader().getBoolAnswer()) {
                     msgText.setFill(Color.GREEN);
                     msgText.setText("Element added!");
                 } else {

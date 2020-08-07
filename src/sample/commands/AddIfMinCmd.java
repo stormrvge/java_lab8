@@ -8,7 +8,7 @@ import sample.logic.collectionClasses.Route;
 
 public class AddIfMinCmd extends Command {
     public AddIfMinCmd() {
-        super("add if min", true);
+        super("add if min", true, true);
     }
 
     public boolean getRequireLogin() {

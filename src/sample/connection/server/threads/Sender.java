@@ -19,11 +19,11 @@ public class Sender implements Runnable {
     public void run() {
         try {
             answer.setIsLogin(isLogin);
-            out.writeObject(answer);
-            out.flush();
-            Thread.sleep(70);
-        } catch (IOException | InterruptedException e) {
+            out.writeObject(answer);        // EXCEPTION STREAM HEADER ON SYNC METHOD
+            //out.flush();
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+        System.out.println(answer.getArgument().toString() + " ...");
     }
 }

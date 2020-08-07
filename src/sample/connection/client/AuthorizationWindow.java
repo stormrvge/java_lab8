@@ -51,7 +51,6 @@ public class AuthorizationWindow extends Application {
 
     public static void main(String[] args) {
         launch(args);
-
     }
 
     @FXML
@@ -67,7 +66,7 @@ public class AuthorizationWindow extends Application {
         RegisterCmd cmd = new RegisterCmd();
         try {
             client.handleRequest(cmd, args);
-            if (client.getBoolAnswer()) {
+            if (client.getMessageReader().getBoolAnswer()) {
                 msg.setFill(Color.GREEN);
                 msg.setText("You has been registered");
             } else {

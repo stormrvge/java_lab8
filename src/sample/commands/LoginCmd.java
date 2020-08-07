@@ -15,7 +15,7 @@ import java.util.FormatterClosedException;
 public class LoginCmd extends Command {
 
     public LoginCmd() {
-        super("login", false);
+        super("login", false, false);
     }
 
     public boolean getRequireLogin() {

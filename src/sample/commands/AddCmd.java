@@ -9,7 +9,7 @@ import sample.logic.collectionClasses.Route;
 public class AddCmd extends Command {
 
     public AddCmd() {
-        super("add", true);
+        super("add", true, true);
     }
 
     public boolean getRequireLogin() {

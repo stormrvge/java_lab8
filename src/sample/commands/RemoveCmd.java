@@ -7,7 +7,7 @@ import sample.logic.User;
 
 public class RemoveCmd extends Command {
     public RemoveCmd() {
-        super("remove", true);
+        super("remove", true, true);
     }
 
     public boolean getRequireLogin() {

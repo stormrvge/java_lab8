@@ -11,10 +11,12 @@ import java.io.Serializable;
 public abstract class Command implements Serializable {
     private String name;
     final boolean require_login;
+    final boolean need_sync;
 
-    protected Command(String name, boolean require_login) {
+    protected Command(String name, boolean require_login, boolean need_sync) {
         this.name = name;
         this.require_login = require_login;
+        this.need_sync = need_sync;
     }
 
     abstract public boolean getRequireLogin();
@@ -24,5 +26,8 @@ public abstract class Command implements Serializable {
 
     public String getName() {
         return name;
+    }
+    public boolean isNeedSync() {
+        return need_sync;
     }
 }

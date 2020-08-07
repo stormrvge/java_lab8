@@ -8,7 +8,7 @@ import sample.logic.collectionClasses.Route;
 
 public class UpdateIdCmd extends Command {
     public UpdateIdCmd() {
-        super("update id", true);
+        super("update id", true, true);
     }
 
     public boolean getRequireLogin() {

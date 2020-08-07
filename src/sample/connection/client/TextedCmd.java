@@ -37,7 +37,7 @@ public class TextedCmd extends Application  {
         Client client = AuthorizationWindow.getClient();
 
         cmdName.setText(client.getCommandName());
-        textArea.setText((String) client.getAnswer());
+        textArea.setText((String) client.getMessageReader().getAnswer());
 
         hBox.setAlignment(Pos.CENTER);
         hBox.setPadding(new Insets(30));

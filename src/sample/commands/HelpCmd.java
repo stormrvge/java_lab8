@@ -7,7 +7,7 @@ import sample.logic.User;
 
 public class HelpCmd extends Command{
     public HelpCmd() {
-        super("help", true);
+        super("help", true, false);
     }
 
     public boolean getRequireLogin() {

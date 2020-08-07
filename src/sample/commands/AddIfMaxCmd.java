@@ -8,7 +8,7 @@ import sample.logic.collectionClasses.Route;
 
 public class AddIfMaxCmd extends Command {
     public AddIfMaxCmd() {
-        super("add if max", true);
+        super("add if max", true, true);
     }
 
     public boolean getRequireLogin() {

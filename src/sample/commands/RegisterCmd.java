@@ -10,7 +10,7 @@ import java.sql.SQLException;
 public class RegisterCmd extends Command {
 
     public RegisterCmd() {
-        super("register", false);
+        super("register", false, false);
     }
 
     public boolean getRequireLogin() {

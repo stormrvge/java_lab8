@@ -10,11 +10,20 @@ public class Packet implements Serializable {
     private final User user;
     private Boolean isLogin;
     private Boolean boolAnswer;
+    private Boolean syncCmd;
+
+    public Packet(Object argument, Boolean syncCmd) {
+        this.command = null;
+        this.user = null;
+        this.argument = argument;
+        this.syncCmd = syncCmd;
+    }
 
     public Packet(Command command, Object argument, User user) {
         this.command = command;
         this.argument = argument;
         this.user = user;
+        this.syncCmd = false;
     }
 
     public Packet(Command command, Object argument, User user, Boolean boolAnswer) {
@@ -22,6 +31,7 @@ public class Packet implements Serializable {
         this.argument = argument;
         this.user = user;
         this.boolAnswer = boolAnswer;
+        this.syncCmd = false;
     }
 
     public Packet(Boolean boolAnswer) {
@@ -29,6 +39,7 @@ public class Packet implements Serializable {
         this.argument = null;
         this.user = null;
         this.boolAnswer = boolAnswer;
+        this.syncCmd = false;
     }
 
 
@@ -46,6 +57,10 @@ public class Packet implements Serializable {
 
     public Boolean getBoolAnswer() {
         return boolAnswer;
+    }
+
+    public Boolean getSync() {
+        return syncCmd;
     }
 
     public Boolean isLogin() {

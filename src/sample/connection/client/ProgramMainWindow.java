@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,6 +14,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -22,6 +26,7 @@ import javafx.util.converter.IntegerStringConverter;
 import sample.commands.*;
 import sample.commands.exceptions.OutOfBoundsException;
 import sample.logic.collectionClasses.Route;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,11 +35,18 @@ import java.util.stream.Collectors;
 
 public class ProgramMainWindow extends Application {
     private Client client;
+
     private StringConverter<Integer> integerStringConverter;
     private StringConverter<Double> doubleStringConverter;
     private StringConverter<Float> floatStringConverter;
 
-    private final ObservableList<Route> routesData = FXCollections.observableArrayList();
+    private int diff_from_start_x;
+    private int diff_from_start_y;
+
+    private static final float m_lambda = 0.1f;
+    private static final int pixel_step = 20;
+
+    private static final ObservableList<Route> routesData = FXCollections.observableArrayList();
 
     @FXML private TableView<Route> tableCollection;
     @FXML private TableColumn<Route, Integer> idColumn;
@@ -68,6 +80,10 @@ public class ProgramMainWindow extends Application {
     @FXML private Button executeScriptButton;
     @FXML private Button helpButton;
 
+    @FXML private AnchorPane coordpane;
+    @FXML private Pane drawpane;
+    @FXML private Tab coordTab;
+
     @Override
     public void start(Stage mainWindow) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("fxmls/programMainWindow.fxml"));
@@ -80,6 +96,8 @@ public class ProgramMainWindow extends Application {
     @FXML
     public void initialize() {
         client = AuthorizationWindow.getClient();
+
+
         username.setText(client.getUser().getUsername());
         doubleStringConverter = new DoubleStringConverter();
         floatStringConverter = new FloatStringConverter();
@@ -96,6 +114,7 @@ public class ProgramMainWindow extends Application {
         infoButton.setOnAction(this::infoButton);
         removeButton.setOnAction(this::removeButton);
         helpButton.setOnAction(this::helpButton);
+        coordTab.setOnSelectionChanged(this::draw);
 
         //EDITABLE COLS
         nameColumn.setOnEditCommit(this::nameEdit);
@@ -108,8 +127,8 @@ public class ProgramMainWindow extends Application {
         toYColumn.setOnEditCommit(this::toYEdit);
         toZColumn.setOnEditCommit(this::toZEdit);
         distanceColumn.setOnEditCommit(this::distanceEdit);
-
     }
+
 
     private void helpButton(ActionEvent actionEvent) {
         try {
@@ -413,13 +432,19 @@ public class ProgramMainWindow extends Application {
         try {
             LoadTableCmd cmd = new LoadTableCmd();
             client.handleRequest(cmd);
-            ArrayList<Route> check = (ArrayList<Route>) client.getAnswer();
+            ArrayList<Route> check = (ArrayList<Route>) client.getAnsPacket().getArgument();    //fix
             check = check.stream().sorted(Comparator.comparing(Route::getId))
                     .collect(Collectors.toCollection(ArrayList::new));
             routesData.addAll(check);
         } catch (IOException | InterruptedException e) {
             e.getMessage();
         }
+    }
+
+    public static void setTable(ArrayList<Route> routes) {
+        routes = routes.stream().sorted(Comparator.comparing(Route::getId))
+                .collect(Collectors.toCollection(ArrayList::new));
+        routesData.addAll(routes);
     }
 
     private void filtering() {
@@ -461,4 +486,54 @@ public class ProgramMainWindow extends Application {
         sortedList.comparatorProperty().bind(tableCollection.comparatorProperty());
         tableCollection.setItems(sortedList);
     }
+
+
+    private void draw(Event event) {
+        diff_from_start_x = (int) drawpane.getWidth() / 2;
+        diff_from_start_y = (int) drawpane.getHeight() / 2;
+
+        //ОТРИСОВКА ОСЕЙ
+        drawpane.getChildren().add(new Line(drawpane.getWidth()/2 , 0,
+                drawpane.getWidth()/2, drawpane.getHeight()));
+        drawpane.getChildren().add(new Line(0, drawpane.getHeight()/2,
+                drawpane.getWidth(), drawpane.getHeight()/2));
+
+        //ОТРИСОВКА линий каждые 5
+        for(int i = (int) (drawpane.getWidth()/2 % pixel_step); i < drawpane.getWidth(); i += pixel_step) {
+            drawpane.getChildren().add(new Line(i, drawpane.getHeight()/2 - 5, i, drawpane.getHeight()/2 + 5)); }
+        for(int i = (int) (drawpane.getHeight()/2 % pixel_step); i < drawpane.getHeight(); i += pixel_step) {
+            drawpane.getChildren().add(new Line(drawpane.getWidth()/2 - 5, i, drawpane.getWidth()/2 + 5, i));}
+
+
+        }
+
+        /*
+    public Coordinates fromXOY(Coordinates c) {
+        return fromXOY(c.getX(), c.getY());
+    }
+
+    Coordinates fromXOY(double x, double y) {
+        try {
+            Coordinates c = new Coordinates(0.d, 0.f );
+            c.setX((x / m_lambda) + diff_from_start_x/2 + diff_from_start_x);
+            c.setY((float)((int)(-y / m_lambda) + diff_from_start_y/2 + diff_from_start_y));
+            return c;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Coordinates toXOY(int x, int y) {
+        try {
+            return new Coordinates((double) (m_lambda*(x - diff_from_start_x -
+                                diff_from_start_x)), m_lambda*(-y + diff_from_start_y +diff_from_start_y));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+         */
 }
+
+
+
+
