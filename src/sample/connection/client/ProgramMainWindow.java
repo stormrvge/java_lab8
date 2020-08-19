@@ -7,6 +7,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,8 +15,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -25,11 +29,13 @@ import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import sample.commands.*;
 import sample.commands.exceptions.OutOfBoundsException;
+import sample.logic.Vector;
 import sample.logic.collectionClasses.Route;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 
@@ -43,10 +49,13 @@ public class ProgramMainWindow extends Application {
     private int diff_from_start_x;
     private int diff_from_start_y;
 
+    private Circle circle;
     private static final float m_lambda = 0.1f;
     private static final int pixel_step = 20;
 
     private static final ObservableList<Route> routesData = FXCollections.observableArrayList();
+    private ObservableList<Circle> circlesList = FXCollections.observableArrayList();
+    private HashMap<String, Color> ownerColorHashMap = new HashMap<>();
 
     @FXML private TableView<Route> tableCollection;
     @FXML private TableColumn<Route, Integer> idColumn;
@@ -103,8 +112,14 @@ public class ProgramMainWindow extends Application {
         floatStringConverter = new FloatStringConverter();
         integerStringConverter = new IntegerStringConverter();
 
+        //COLLECTION INIT
         loadTable();
+        draw();
         filtering();
+
+        //ANIMATION INIT
+        initShapes();
+        drawShapes();
 
         //BUTTONS ACTION LISTENERS
         logoutButton.setOnAction(this::logoutButton);
@@ -114,7 +129,8 @@ public class ProgramMainWindow extends Application {
         infoButton.setOnAction(this::infoButton);
         removeButton.setOnAction(this::removeButton);
         helpButton.setOnAction(this::helpButton);
-        coordTab.setOnSelectionChanged(this::draw);
+        //coordTab.setOnSelectionChanged(this::draw);
+        coordTab.setContent(drawpane);
 
         //EDITABLE COLS
         nameColumn.setOnEditCommit(this::nameEdit);
@@ -398,6 +414,7 @@ public class ProgramMainWindow extends Application {
 
     @FXML
     private void loadTable() {
+        routesData.clear();
         initTable();
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -431,8 +448,13 @@ public class ProgramMainWindow extends Application {
     private void initTable() {
         try {
             LoadTableCmd cmd = new LoadTableCmd();
+            ArrayList<Route> check = new ArrayList<>();
             client.handleRequest(cmd);
-            ArrayList<Route> check = (ArrayList<Route>) client.getAnsPacket().getArgument();    //fix
+            if (client.getAnsPacket().getArgument() != null) {          //FIX
+                check = (ArrayList<Route>) client.getAnsPacket().getArgument();
+            } else {
+                System.out.println("Answer from server is empty.");
+            }
             check = check.stream().sorted(Comparator.comparing(Route::getId))
                     .collect(Collectors.toCollection(ArrayList::new));
             routesData.addAll(check);
@@ -488,51 +510,65 @@ public class ProgramMainWindow extends Application {
         tableCollection.setItems(sortedList);
     }
 
-
-    private void draw(Event event) {
-        diff_from_start_x = (int) drawpane.getWidth() / 2;
-        diff_from_start_y = (int) drawpane.getHeight() / 2;
+    //                  VISUALISATION WINDOW
+    private void draw() {
+        double width = drawpane.getPrefWidth();
+        double height = drawpane.getPrefHeight();
+        diff_from_start_x = (int) drawpane.getPrefWidth() / 2;
+        diff_from_start_y = (int) drawpane.getPrefHeight() / 2;
 
         //ОТРИСОВКА ОСЕЙ
-        drawpane.getChildren().add(new Line(drawpane.getWidth()/2 , 0,
-                drawpane.getWidth()/2, drawpane.getHeight()));
-        drawpane.getChildren().add(new Line(0, drawpane.getHeight()/2,
-                drawpane.getWidth(), drawpane.getHeight()/2));
+        drawpane.getChildren().add(new Line(width/2 , 0, width/2, height));
+        drawpane.getChildren().add(new Line(0, height/2, width, height/2));
 
         //ОТРИСОВКА линий каждые 5
-        for(int i = (int) (drawpane.getWidth()/2 % pixel_step); i < drawpane.getWidth(); i += pixel_step) {
-            drawpane.getChildren().add(new Line(i, drawpane.getHeight()/2 - 5, i, drawpane.getHeight()/2 + 5)); }
-        for(int i = (int) (drawpane.getHeight()/2 % pixel_step); i < drawpane.getHeight(); i += pixel_step) {
-            drawpane.getChildren().add(new Line(drawpane.getWidth()/2 - 5, i, drawpane.getWidth()/2 + 5, i));}
+        for(int i = (int) (width/2 % pixel_step); i < width; i += pixel_step) {
+            drawpane.getChildren().add(
+                    new Line(i, height/2 - 5, i, height/2 + 5)); }
+        for(int i = (int) (height/2 % pixel_step); i < height; i += pixel_step) {
+            drawpane.getChildren().add(new Line(width/2 - 5 , i, width/2 + 5, i));}
 
-
-        }
-
-        /*
-    public Coordinates fromXOY(Coordinates c) {
-        return fromXOY(c.getX(), c.getY());
+        //ОТРИСОВКА сетки
+        for(int i = (int) (width/2) % pixel_step; i < width; i += pixel_step/2) {
+            Line line = new Line(i, 0, i, height);
+            line.setStrokeWidth(0.2);
+            drawpane.getChildren().add(line); }
+        for(int i = (int) height/2 % pixel_step; i < height; i += pixel_step/2) {
+            Line line = new Line(0, i, width, i);
+            line.setStrokeWidth(0.2);
+            drawpane.getChildren().add(line); }
     }
 
-    Coordinates fromXOY(double x, double y) {
-        try {
-            Coordinates c = new Coordinates(0.d, 0.f );
-            c.setX((x / m_lambda) + diff_from_start_x/2 + diff_from_start_x);
-            c.setY((float)((int)(-y / m_lambda) + diff_from_start_y/2 + diff_from_start_y));
-            return c;
-        } catch (Exception e) {
-            return null;
+
+    // СДЕЛАТЬ ТАК, ЧТОБЫ ОТКРЫВАЛОСЬ ОКНО О КРУГЕ, НА КОТОРЫЙ МЫ КЛИКНУЛИ.
+    EventHandler<MouseEvent> circleEvent = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            circle = (Circle) mouseEvent.getSource();
+            System.out.println("TEST CIRCLE EVENT");
+        }
+    };
+
+    private void initShapes() {
+        // СДЕЛАТЬ КАЖДОМУ КРУГУ ЦВЕТ ПОД ВЛАДЕЛЬЦА. СДЕЛАТЬ НОРМАЛЬНЫЙ РАДИУС.
+        for (Route route : routesData) {
+            if (ownerColorHashMap.get(route.getOwner()) == null) {
+                ownerColorHashMap.put(route.getOwner(), Color.color(Math.random(), Math.random(), Math.random()));
+            }
+            Vector vector = Vector.toPixels(drawpane, pixel_step, route.getCoordX(), route.getCoordY());
+            circle = new Circle(vector.getX(), vector.getY(), route.getDistance() * 3);
+            circle.setFill(ownerColorHashMap.get(route.getOwner()));
+            circle.addEventFilter(MouseEvent.MOUSE_CLICKED, circleEvent);
+            circlesList.add(circle);
         }
     }
 
-    public Coordinates toXOY(int x, int y) {
-        try {
-            return new Coordinates((double) (m_lambda*(x - diff_from_start_x -
-                                diff_from_start_x)), m_lambda*(-y + diff_from_start_y +diff_from_start_y));
-        } catch (Exception e) {
-            return null;
+    private void drawShapes() {
+        // СДЕЛАТЬ ЧЕРЕЗ ИТЕРАТОР
+        for (int i = 0; circlesList.size() > i; i++) {
+            drawpane.getChildren().add(circlesList.get(i));
         }
     }
-         */
 }
 
 

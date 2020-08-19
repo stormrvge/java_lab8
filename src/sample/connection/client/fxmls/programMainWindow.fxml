@@ -50,10 +50,9 @@
           </Tab>
           <Tab fx:id="coordTab" text="Coordinates">
             <content>
-              <AnchorPane fx:id="coordpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <Pane fx:id="drawpane" layoutY="6.0" prefHeight="469.0" prefWidth="900.0" />
-                     </children></AnchorPane>
+                <AnchorPane fx:id="coordpane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <Pane fx:id="drawpane" layoutY="6.0" prefHeight="469.0" prefWidth="900.0"/>
+                </AnchorPane>
             </content>
           </Tab>
         </tabs>
