@@ -1,4 +1,4 @@
-package sample.connection.client;
+package sample.connection.client.gui;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -14,27 +14,21 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import sample.commands.RegisterCmd;
 import sample.commands.LoginCmd;
+import sample.connection.client.Client;
+import sample.connection.client.localization.Localizer;
 
 import java.io.IOException;
 
 public class AuthorizationWindow extends Application {
     static private Client client;
+    private Localizer localizer;
 
-
-    @FXML
-    private Button reg;
-
-    @FXML
-    private Button log;
-
-    @FXML
-    private TextField textField;
-
-    @FXML
-    private PasswordField passField;
-
-    @FXML
-    private Text msg;
+    @FXML private Text text;
+    @FXML private Button reg;
+    @FXML private Button log;
+    @FXML private TextField textField;
+    @FXML private PasswordField passField;
+    @FXML private Text msg;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -55,6 +49,14 @@ public class AuthorizationWindow extends Application {
 
     @FXML
     public void initialize() {
+        localizer = new Localizer();
+
+        text.setText(localizer.get().getString("Authorization"));
+        log.setText(localizer.get().getString("Login"));
+        reg.setText(localizer.get().getString("Register"));
+        textField.setPromptText(localizer.get().getString("EnterLogin"));
+        passField.setPromptText(localizer.get().getString("EnterPass"));
+
         reg.setOnAction(this::regButton);
         log.setOnAction(this::loginButton);
     }
@@ -68,9 +70,9 @@ public class AuthorizationWindow extends Application {
             client.handleRequest(cmd, args);
             if (client.getMessageReader().getBoolAnswer()) {
                 msg.setFill(Color.GREEN);
-                msg.setText("You has been registered");
+                msg.setText(localizer.get().getString("RegisterSuccess"));
             } else {
-                msg.setText("You hasn't been registered");
+                msg.setText(localizer.get().getString("RegisterFail"));
             }
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
@@ -90,7 +92,7 @@ public class AuthorizationWindow extends Application {
                 ProgramMainWindow programMainWindow = new ProgramMainWindow();
                 programMainWindow.start(stage);
             } else {
-                msg.setText("Incorrect login or password");
+                msg.setText(localizer.get().getString("LoginFail"));
             }
 
         } catch (Exception e) {

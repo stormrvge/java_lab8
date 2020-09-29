@@ -7,7 +7,7 @@ import sample.logic.User;
 
 public class InfoCmd extends Command {
     public InfoCmd() {
-        super("info", true, false);
+        super("Info", true, false);
     }
 
     public boolean getRequireLogin() {

@@ -22,7 +22,7 @@ public class Client {
 
     private MessageReader messageReader;
     private Packet packet;
-    public Packet ansPacket;
+    private Packet ansPacket;
     private final AtomicReference<Packet> atomicPacket = new AtomicReference<>();
 
     public Client(String hostname, int port) {
@@ -30,7 +30,7 @@ public class Client {
         this.port = port;
     }
 
-    void run() {
+    public void run() {
         user = new User();
 
         try {
@@ -40,7 +40,7 @@ public class Client {
                 channel.configureBlocking(false);
 
             } catch (SocketException e) {
-                System.out.println("Cant connect to the connection.server. Server is down.");
+                System.out.println("Cant connect to the server. Server is down.");
                 reconnect();
             }
         } catch (NullPointerException | IOException e) {
@@ -51,7 +51,7 @@ public class Client {
         messageReader.start();
     }
 
-    void handleRequest(Command command, Object ... args) throws IOException, InterruptedException {
+    public void handleRequest(Command command, Object ... args) throws IOException, InterruptedException {
         if (command != null) {
             packet = command.execOnClient(this, args);
             sendPacket(packet);
@@ -90,7 +90,7 @@ public class Client {
 
 
 
-    private void reconnect() {
+    public void reconnect() {
         System.out.println("Reconnecting...");
         try {
             for (int i = 0; i < 10; i++) {
@@ -99,7 +99,7 @@ public class Client {
                     run();
                     break;
                 } catch (Exception e) {
-                    System.err.println("No answer from connection.server, trying: " + (i + 1));
+                    System.err.println("No answer from server, trying: " + (i + 1));
                 }
                 Thread.sleep(1000);
             }

@@ -20,7 +20,7 @@ public class RefreshTableCmd extends Command {
     public Packet execOnServer(Server server, Object args, User user) {
         System.out.println("SYNC CMD");
 
-        Command loadTable = new LoadTableCmd();
+        Command loadTable = new LoadTableCmd();     //FIX
         Packet packet = loadTable.execOnServer(server, args, user);
         return new Packet(packet.getArgument(), true);
     }

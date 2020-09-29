@@ -1,4 +1,4 @@
-package sample.connection.client;
+package sample.connection.client.gui;
 
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -12,30 +12,35 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import sample.connection.client.Client;
+import sample.connection.client.localization.Localizer;
 
 
 public class TextedCmd extends Application  {
-    private ProgramMainWindow mainWindow;
 
     @FXML private Text cmdName;
     @FXML private TextArea textArea;
     @FXML private HBox hBox;
 
     @Override
-    public void start(Stage addElementWindow) throws Exception {
+    public void start(Stage TextedCmd) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("fxmls/textedCmd.fxml"));
-        addElementWindow.setTitle("Command");
-        addElementWindow.setScene(new Scene(root, 600, 400));
+        TextedCmd.setTitle("Command");
+        TextedCmd.setScene(new Scene(root, 600, 400));
 
-        addElementWindow.show();
+        TextedCmd.show();
     }
 
     @FXML
     public void initialize() {
+        Localizer localizer = new Localizer();
         Client client = AuthorizationWindow.getClient();
 
-        cmdName.setText(client.getCommandName());
-        textArea.setText((String) client.getMessageReader().getAnswer());
+        cmdName.setText(localizer.get().getString(client.getCommandName()));
+        try {
+            textArea.setText((String) client.getMessageReader().getAnswer());
+        } catch (ClassCastException ignored) {}
+
 
         hBox.setAlignment(Pos.CENTER);
         hBox.setPadding(new Insets(30));

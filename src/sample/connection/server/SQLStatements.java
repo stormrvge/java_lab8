@@ -25,6 +25,7 @@ public class SQLStatements {
         this.manager = manager;
         initStatements();
         load();
+        fillColorHashMap();
     }
 
     void initStatements() throws SQLException {
@@ -84,5 +85,11 @@ public class SQLStatements {
         ResultSet res = database.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)
                 .executeQuery("SELECT * FROM collection");
         manager.load(res);
+    }
+
+    void fillColorHashMap() throws SQLException {
+        ResultSet res = database.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)
+                .executeQuery("SELECT DISTINCT owner from collection");
+        manager.fillColorHashMap(res);
     }
 }

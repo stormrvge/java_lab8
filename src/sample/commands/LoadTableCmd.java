@@ -30,7 +30,17 @@ public class LoadTableCmd extends Command {
     public Packet execOnServer(Server server, Object args, User user) {
         try {
             if (server.getSqlStatements().login(user)) {
-                return new Packet(null, server.getManager().getRouteCollection(), null);
+
+                Object[] answer = new Object[]{
+                        server.getManager().getRouteCollection(),
+                        server.getManager().getColorHashMap()};
+
+
+                return new Packet(null, new Object[] {
+                        server.getManager().getRouteCollection(),
+                        server.getManager().getColorHashMap()}, null);
+
+                //return new Packet(null, server.getManager().getRouteCollection(), null);
             } else {
                 return new Packet(false);
             }

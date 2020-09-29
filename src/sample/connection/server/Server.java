@@ -60,7 +60,7 @@ public class Server {
             Invoker invoker = new Invoker();
             manager = new CollectionManager();
             sqlStatements = new SQLStatements(database, manager);
-            sqlStatements.load();
+            //sqlStatements.load();
 
             BufferedReader inputCmd = new BufferedReader(new InputStreamReader(System.in));
 

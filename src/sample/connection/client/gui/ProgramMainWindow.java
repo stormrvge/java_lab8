@@ -1,15 +1,16 @@
-package sample.connection.client;
+package sample.connection.client.gui;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -18,7 +19,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
@@ -29,6 +29,10 @@ import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import sample.commands.*;
 import sample.commands.exceptions.OutOfBoundsException;
+import sample.connection.client.Client;
+import sample.connection.client.localization.Localizer;
+import sample.connection.client.threads.SyncCheckerThread;
+import sample.logic.SerializableColor;
 import sample.logic.Vector;
 import sample.logic.collectionClasses.Route;
 
@@ -36,26 +40,30 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 
 public class ProgramMainWindow extends Application {
-    private Client client;
+    private static Client client;
+    private static Boolean synced = true;
+
+    private Localizer localizer;
 
     private StringConverter<Integer> integerStringConverter;
     private StringConverter<Double> doubleStringConverter;
     private StringConverter<Float> floatStringConverter;
 
-    private int diff_from_start_x;
-    private int diff_from_start_y;
 
     private Circle circle;
-    private static final float m_lambda = 0.1f;
     private static final int pixel_step = 20;
 
     private static final ObservableList<Route> routesData = FXCollections.observableArrayList();
-    private ObservableList<Circle> circlesList = FXCollections.observableArrayList();
-    private HashMap<String, Color> ownerColorHashMap = new HashMap<>();
+    private static final ObservableList<Circle> circlesList = FXCollections.observableArrayList();
+    private static final HashMap<Circle, Route> routeHashMap = new HashMap<>();
+    private static HashMap<String, SerializableColor> ownerColorHashMap = new HashMap<>();
+    private static Route selectedRoute;
 
     @FXML private TableView<Route> tableCollection;
     @FXML private TableColumn<Route, Integer> idColumn;
@@ -72,8 +80,12 @@ public class ProgramMainWindow extends Application {
     @FXML private TableColumn<Route, String> creationDate;
     @FXML private TableColumn<Route, String> ownerColumn;
 
+    @FXML private Tab collection;
     @FXML private Text username;
-    @FXML private TextField filteringText;
+    @FXML private Text usernameText;
+    @FXML private TextField filteringSearchText;
+    @FXML private Text filteringBy;
+    @FXML private Text errorMsg;
 
     @FXML private ChoiceBox<String> filterChoiceBox;
 
@@ -93,6 +105,18 @@ public class ProgramMainWindow extends Application {
     @FXML private Pane drawpane;
     @FXML private Tab coordTab;
 
+    Thread printPermissionError = new Thread() {
+        @Override
+       public void run() {
+            try {
+                errorMsg.setText(localizer.get().getString("PermissionException"));
+                Thread.sleep(3000);
+                errorMsg.setText("");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }}};
+    ExecutorService executorService = Executors.newFixedThreadPool(1);
+
     @Override
     public void start(Stage mainWindow) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("fxmls/programMainWindow.fxml"));
@@ -106,6 +130,44 @@ public class ProgramMainWindow extends Application {
     public void initialize() {
         client = AuthorizationWindow.getClient();
 
+        localizer = new Localizer();
+        collection.setText(localizer.get().getString("Collection"));
+        coordTab.setText(localizer.get().getString("Coordinates"));
+        usernameText.setText(localizer.get().getString("Username"));
+        logoutButton.setText(localizer.get().getString("Logout"));
+        filteringBy.setText(localizer.get().getString("FilteringText"));
+        //filteringText.setText(localizer.get().getString("FilteringText"));
+
+        idColumn.setText(localizer.get().getString("IdColumn"));
+        nameColumn.setText(localizer.get().getString("NameColumn"));
+        coordXColumn.setText(localizer.get().getString("XCoordColumn"));
+        coordYColumn.setText(localizer.get().getString("YCoordColumn"));
+        fromXColumn.setText(localizer.get().getString("XFromColumn"));
+        fromYColumn.setText(localizer.get().getString("YFromColumn"));
+        fromZColumn.setText(localizer.get().getString("ZFromColumn"));
+        toXColumn.setText(localizer.get().getString("XToColumn"));
+        toYColumn.setText(localizer.get().getString("YToColumn"));
+        toZColumn.setText(localizer.get().getString("ZToColumn"));
+        distanceColumn.setText(localizer.get().getString("DistanceColumn"));
+        creationDate.setText(localizer.get().getString("CreationDateColumn"));
+        ownerColumn.setText(localizer.get().getString("OwnerColumn"));
+
+        addElementButton.setText(localizer.get().getString("AddElement"));
+        infoButton.setText(localizer.get().getString("InfoButton"));
+        helpButton.setText(localizer.get().getString("HelpButton"));
+        clearCollectionButton.setText(localizer.get().getString("ClearCollection"));
+        filterByDistanceButton.setText(localizer.get().getString("FilterByDistance"));
+        removeButton.setText(localizer.get().getString("Remove"));
+        uniqueDistanceButton.setText(localizer.get().getString("UniqueDistanceButton"));
+        showButton.setText(localizer.get().getString("ShowButton"));
+        sortButton.setText(localizer.get().getString("Sort"));
+        executeScriptButton.setText(localizer.get().getString("ExecuteScript"));
+
+        //ExecutorService executor = Executors.newFixedThreadPool(3);
+        //executor.submit(new Thread(new SyncCheckerThread(this)));
+
+        Task<Void> task = new SyncCheckerThread(this);
+        new Thread(task).start();
 
         username.setText(client.getUser().getUsername());
         doubleStringConverter = new DoubleStringConverter();
@@ -129,6 +191,7 @@ public class ProgramMainWindow extends Application {
         infoButton.setOnAction(this::infoButton);
         removeButton.setOnAction(this::removeButton);
         helpButton.setOnAction(this::helpButton);
+        clearCollectionButton.setOnAction(this::clearCollectionButton);
         //coordTab.setOnSelectionChanged(this::draw);
         coordTab.setContent(drawpane);
 
@@ -159,13 +222,33 @@ public class ProgramMainWindow extends Application {
         }
     }
 
+    private void clearCollectionButton(ActionEvent actionEvent) {
+        try {
+            ClearCmd cmd = new ClearCmd();
+            client.handleRequest(cmd, "");
+
+            ArrayList<Route> check = new ArrayList<>();
+            check = routesData.stream().filter(route -> route.getOwner().equals(client.getUser().getUsername()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+            routesData.removeAll(check);
+
+            initTable();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void removeButton(ActionEvent actionEvent) {
         try {
             Route route = tableCollection.getSelectionModel().getSelectedItem();
             RemoveCmd cmd = new RemoveCmd();
             client.handleRequest(cmd, route.getId());
+            routesData.remove(route);
+
+            synced = false;
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            System.out.println(localizer.get().getString("NotSelectedElementForDelete"));
         }
     }
 
@@ -214,6 +297,8 @@ public class ProgramMainWindow extends Application {
 
             AddElementWindow addElementWindow = new AddElementWindow();
             addElementWindow.start(stage);
+
+            synced = false;
         } catch (Exception ignored) {}
     }
 
@@ -242,10 +327,11 @@ public class ProgramMainWindow extends Application {
             } catch (IOException | InterruptedException e) {
                 System.err.println(e.getMessage());
             }
-
             System.out.println(route.getName());
+            synced = false;
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -258,12 +344,17 @@ public class ProgramMainWindow extends Application {
                 Command cmd = new UpdateIdCmd();
                 Object[] args = new Object[]{route.getId(), route};
                 client.handleRequest(cmd, args);
+                initShapes();
+                drawShapes();
+
+                synced = false;
             } catch (IOException | InterruptedException | OutOfBoundsException e) {
                 System.err.println(e.getMessage());
             }
             System.out.println(route.getCoordX());
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -276,12 +367,17 @@ public class ProgramMainWindow extends Application {
                 Command cmd = new UpdateIdCmd();
                 Object[] args = new Object[]{route.getId(), route};
                 client.handleRequest(cmd, args);
+                initShapes();
+                drawShapes();  
+
+                synced = false;
             } catch (IOException | InterruptedException | OutOfBoundsException e) {
                 System.err.println(e.getMessage());
             }
             System.out.println(route.getCoordY());
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -299,8 +395,11 @@ public class ProgramMainWindow extends Application {
                 System.err.println(e.getMessage());
             }
             System.out.println(route.getFromX());
+
+            synced = false;
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -317,8 +416,11 @@ public class ProgramMainWindow extends Application {
                 System.err.println(e.getMessage());
             }
             System.out.println(route.getFromY());
+
+            synced = false;
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -335,8 +437,11 @@ public class ProgramMainWindow extends Application {
                 System.err.println(e.getMessage());
             }
             System.out.println(route.getFromZ());
+
+            synced = false;
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -353,8 +458,11 @@ public class ProgramMainWindow extends Application {
                 System.err.println(e.getMessage());
             }
             System.out.println(route.getToX());
+
+            synced = false;
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -371,8 +479,11 @@ public class ProgramMainWindow extends Application {
                 System.err.println(e.getMessage());
             }
             System.out.println(route.getToY());
+
+            synced = false;
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -389,8 +500,11 @@ public class ProgramMainWindow extends Application {
                 System.err.println(e.getMessage());
             }
             System.out.println(route.getToZ());
+
+            synced = false;
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -403,12 +517,18 @@ public class ProgramMainWindow extends Application {
                 Command cmd = new UpdateIdCmd();
                 Object[] args = new Object[]{route.getId(), route};
                 client.handleRequest(cmd, args);
+
+                initShapes(); 
+                drawShapes(); 
             } catch (IOException | InterruptedException | OutOfBoundsException e) {
                 System.err.println(e.getMessage());
             }
             System.out.println(route.getDistance());
+
+            synced = false;
         } else {
-            System.err.println("DO ERR IN GUI");
+            initTable();                                                          
+            executorService.submit(printPermissionError);
         }
     }
 
@@ -445,22 +565,29 @@ public class ProgramMainWindow extends Application {
         tableCollection.setItems(routesData);
     }
 
-    private void initTable() {
+    public static void initTable() {
         try {
+            routesData.clear();
+            
             LoadTableCmd cmd = new LoadTableCmd();
             ArrayList<Route> check = new ArrayList<>();
             client.handleRequest(cmd);
             if (client.getAnsPacket().getArgument() != null) {          //FIX
-                check = (ArrayList<Route>) client.getAnsPacket().getArgument();
+                Object[] answer = (Object[]) client.getAnsPacket().getArgument();
+
+                check = (ArrayList<Route>) answer[0];
+                ownerColorHashMap = (HashMap<String, SerializableColor>) answer[1];
             } else {
                 System.out.println("Answer from server is empty.");
             }
             check = check.stream().sorted(Comparator.comparing(Route::getId))
                     .collect(Collectors.toCollection(ArrayList::new));
             routesData.addAll(check);
+
+            synced = true;
         } catch (IOException | InterruptedException e) {
             e.getMessage();
-        }
+        } catch (ClassCastException ignored) {}
     }
 
     public static void setTable(ArrayList<Route> routes) {
@@ -468,16 +595,23 @@ public class ProgramMainWindow extends Application {
         routes = routes.stream().sorted(Comparator.comparing(Route::getId))
                 .collect(Collectors.toCollection(ArrayList::new));
         routesData.addAll(routes);
+
+        synced = true;
     }
 
     private void filtering() {
-        ObservableList<String> filteringBy = FXCollections.observableArrayList("id", "name", "distance",
-                "creation date", "owner");
-        filterChoiceBox.setValue("id");
+        String id = localizer.get().getString("IdColumn");
+        String name = localizer.get().getString("NameColumn");
+        String distance = localizer.get().getString("DistanceColumn");
+        String creationDate = localizer.get().getString("CreationDateColumn");
+        String owner = localizer.get().getString("OwnerColumn");
+        ObservableList<String> filteringBy = FXCollections.observableArrayList(id, name, distance,
+                creationDate, owner);
+        filterChoiceBox.setValue(id);
         filterChoiceBox.setItems(filteringBy);
 
         FilteredList<Route> filteredList = new FilteredList<>(routesData, p -> true);
-        filteringText.textProperty().addListener((observable, oldValue, newValue) -> {
+        filteringSearchText.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredList.setPredicate(route -> {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
@@ -486,19 +620,19 @@ public class ProgramMainWindow extends Application {
                 String lowerCaseFilter = newValue.toLowerCase();
 
 
-                if (filterChoiceBox.getValue().equals("name") &&
+                if (filterChoiceBox.getValue().equals(name) &&
                         route.getName().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (filterChoiceBox.getValue().equals("owner") &&
+                } else if (filterChoiceBox.getValue().equals(owner) &&
                         route.getOwner().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (filterChoiceBox.getValue().equals("distance") &&
+                } else if (filterChoiceBox.getValue().equals(distance) &&
                         Float.toString(route.getDistance()).contains(lowerCaseFilter)) {
                     return true;
-                } else if (filterChoiceBox.getValue().equals("creation date") &&
+                } else if (filterChoiceBox.getValue().equals(creationDate) &&
                         route.getCreationDate().contains(newValue)) {
                     return true;
-                } else if (filterChoiceBox.getValue().equals("id") &&
+                } else if (filterChoiceBox.getValue().equals(id) &&
                         Integer.toString(route.getId()).contains(newValue)) {
                     return true;
                 }
@@ -514,8 +648,6 @@ public class ProgramMainWindow extends Application {
     private void draw() {
         double width = drawpane.getPrefWidth();
         double height = drawpane.getPrefHeight();
-        diff_from_start_x = (int) drawpane.getPrefWidth() / 2;
-        diff_from_start_y = (int) drawpane.getPrefHeight() / 2;
 
         //ОТРИСОВКА ОСЕЙ
         drawpane.getChildren().add(new Line(width/2 , 0, width/2, height));
@@ -539,38 +671,72 @@ public class ProgramMainWindow extends Application {
             drawpane.getChildren().add(line); }
     }
 
-
-    // СДЕЛАТЬ ТАК, ЧТОБЫ ОТКРЫВАЛОСЬ ОКНО О КРУГЕ, НА КОТОРЫЙ МЫ КЛИКНУЛИ.
     EventHandler<MouseEvent> circleEvent = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent mouseEvent) {
             circle = (Circle) mouseEvent.getSource();
             System.out.println("TEST CIRCLE EVENT");
+            selectedRoute = routeHashMap.get(circle);
+            System.out.println(routeHashMap.get(circle).getId());
+
+            ChangeElementWindow changeElementWindow = new ChangeElementWindow();
+            try {
+                Stage stage = new Stage();
+                changeElementWindow.start(stage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     };
 
     private void initShapes() {
-        // СДЕЛАТЬ КАЖДОМУ КРУГУ ЦВЕТ ПОД ВЛАДЕЛЬЦА. СДЕЛАТЬ НОРМАЛЬНЫЙ РАДИУС.
+        circlesList.clear();
+
         for (Route route : routesData) {
-            if (ownerColorHashMap.get(route.getOwner()) == null) {
-                ownerColorHashMap.put(route.getOwner(), Color.color(Math.random(), Math.random(), Math.random()));
-            }
             Vector vector = Vector.toPixels(drawpane, pixel_step, route.getCoordX(), route.getCoordY());
             circle = new Circle(vector.getX(), vector.getY(), route.getDistance() * 3);
-            circle.setFill(ownerColorHashMap.get(route.getOwner()));
+            circle.setFill(ownerColorHashMap.get(route.getOwner()).getColor());
             circle.addEventFilter(MouseEvent.MOUSE_CLICKED, circleEvent);
             circlesList.add(circle);
+            routeHashMap.put(circle, route);
         }
     }
 
     private void drawShapes() {
         // СДЕЛАТЬ ЧЕРЕЗ ИТЕРАТОР
+        drawpane.getChildren().removeAll(circlesList);
+
+        ArrayList<Node> circles = drawpane.getChildren().stream().filter(node -> node.getClass().getSimpleName().equals("Circle"))
+                .collect(Collectors.toCollection(ArrayList::new));
+        drawpane.getChildren().removeAll(circles);
+
         for (int i = 0; circlesList.size() > i; i++) {
             drawpane.getChildren().add(circlesList.get(i));
         }
     }
+
+    public static Boolean getSynced() {
+        return synced;
+    }
+
+    public static void setSynced(boolean bool) {
+        synced = bool;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public static Route getSelectedRoute() {
+        return selectedRoute;
+    }
+
+    public void sync(ArrayList<Route> routes) {
+        setTable(routes);
+        initShapes();
+        drawShapes();
+
+        synced = true;
+    }
 }
-
-
-
 

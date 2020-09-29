@@ -1,7 +1,6 @@
 package sample.logic;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.scene.paint.Color;
 import sample.commands.exceptions.OutOfBoundsException;
 import sample.commands.exceptions.PermissionDeniedException;
 import sample.connection.server.Server;
@@ -12,10 +11,7 @@ import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -24,13 +20,14 @@ import java.util.stream.Collectors;
  */
 public class CollectionManager implements Serializable {
     private final ArrayList<Route> route;
-    private final ObservableList<Route> routeFX = FXCollections.observableArrayList();
+    private final HashMap<String, SerializableColor> hashMap;
     private final java.time.ZonedDateTime date;
     private final ReentrantLock lock;
 
     public CollectionManager() {
         date = java.time.ZonedDateTime.now();
         route = new ArrayList<>();
+        hashMap = new HashMap<String, SerializableColor>();
         lock = new ReentrantLock();
     }
 
@@ -41,6 +38,15 @@ public class CollectionManager implements Serializable {
             route.add(Route.generateFromSQL(res));
         }
         lock.unlock();
+    }
+
+    public void fillColorHashMap(ResultSet res) throws SQLException {
+        while (res.next()) {
+            if (hashMap.get(res.getString(1)) == null) {
+                hashMap.put(res.getString(1),
+                        new SerializableColor(Math.random(), Math.random(), Math.random()));
+            }
+        }
     }
 
     /**
@@ -336,5 +342,9 @@ public class CollectionManager implements Serializable {
 
     public ArrayList<Route> getRouteCollection() {
         return route;
+    }
+
+    public HashMap<String, SerializableColor> getColorHashMap() {
+        return hashMap;
     }
 }

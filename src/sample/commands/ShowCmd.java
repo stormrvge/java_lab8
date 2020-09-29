@@ -7,7 +7,7 @@ import sample.logic.User;
 
 public class ShowCmd extends Command {
     public ShowCmd() {
-        super("show", true, false);
+        super("Show", true, false);
     }
 
     public boolean getRequireLogin() {

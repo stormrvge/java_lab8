@@ -7,7 +7,7 @@ import sample.logic.User;
 
 public class UniqueDistanceCmd extends Command {
     public UniqueDistanceCmd() {
-        super("unique distance", true, false);
+        super("Unique distance", true, false);
     }
 
     public boolean getRequireLogin() {
