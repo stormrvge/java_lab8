@@ -127,6 +127,16 @@ public class Server {
         }
     }
 
+    public static String parseIOException(IOException e) {
+        String s = e.getMessage();
+
+        if (s.contains("(") && s.contains(")")) {
+            s = s.substring(s.indexOf("(") + 1);
+            s = s.substring(0, s.indexOf(")"));
+        }
+        return s;
+    }
+
     public CollectionManager getManager() {
         return manager;
     }

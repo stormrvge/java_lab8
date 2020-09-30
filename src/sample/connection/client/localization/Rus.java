@@ -26,6 +26,7 @@ public class Rus extends ListResourceBundle {
                     {"FilterByDistance", "Фильтр. дистанция"},
                     {"Remove", "Удалить"},
                     {"UniqueDistanceButton", "Уник. дистанция"},
+                    {"CountByDistanceButton", "Элементы с дист."},
                     {"ShowButton", "Показать"},
                     {"Sort", "Сортировать"},
                     {"ExecuteScript", "Выполнить скрипт"},
@@ -66,7 +67,19 @@ public class Rus extends ListResourceBundle {
                     {"Help", "Помощь"},
                     {"Show", "Показать элементы коллекции"},
                     {"PermissionException", "У Вас нет доступа к изменению полей данного объекта!"},
-                    {"NumberFormatException", "Неверно введены данные"}
+                    {"NumberFormatException", "Неверно введены данные"},
+                    {"Type", "Тип"},
+                    {"CollectionSize", "размер коллекции"},
+                    {"UniqueDistance", "Уникальные дистанции"},
+                    {"HelpAnswer", " info: вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.) \n show: вывести в стандартный поток вывода все элементы коллекции в строковом представлении. \n add {element}: добавить новый элемент в коллекцию \n clear: очистить коллекцию \n count_by_distance distance: вывести количество элементов, значение поля distance которых равно заданному \n print_unique_distance distance: вывести уникальные значения поля distance \n "},
+                    {"CountButton", "Считать"},
+                    {"CountByDistanceText", "Подсчитать кол-во эл. по дистанции"},
+                    {"NumberOfCoincidences", "Количество совпадений"},
+                    {"ExecuteScriptName", "Выполнение скрипта"},
+                    {"ChooseFile", "Выбрать файл"},
+                    {"ChosenFile", "Выбранный файл:"},
+                    {"StopScript", "Остановить"},
+                    {"ExecResultText", "Результат выполнения скрипта"}
             };
 
     @Override

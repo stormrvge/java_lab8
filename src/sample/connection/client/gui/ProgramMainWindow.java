@@ -42,12 +42,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
 public class ProgramMainWindow extends Application {
     private static Client client;
     private static Boolean synced = true;
+    private boolean isSortedByDistance = false;
 
     private Localizer localizer;
 
@@ -93,7 +95,7 @@ public class ProgramMainWindow extends Application {
     @FXML private Button addElementButton;
     @FXML private Button infoButton;
     @FXML private Button clearCollectionButton;
-    @FXML private Button filterByDistanceButton;
+    @FXML private Button countByDistanceButton;
     @FXML private Button removeButton;
     @FXML private Button uniqueDistanceButton;
     @FXML private Button showButton;
@@ -156,7 +158,7 @@ public class ProgramMainWindow extends Application {
         infoButton.setText(localizer.get().getString("InfoButton"));
         helpButton.setText(localizer.get().getString("HelpButton"));
         clearCollectionButton.setText(localizer.get().getString("ClearCollection"));
-        filterByDistanceButton.setText(localizer.get().getString("FilterByDistance"));
+        countByDistanceButton.setText(localizer.get().getString("CountByDistanceButton"));
         removeButton.setText(localizer.get().getString("Remove"));
         uniqueDistanceButton.setText(localizer.get().getString("UniqueDistanceButton"));
         showButton.setText(localizer.get().getString("ShowButton"));
@@ -191,7 +193,10 @@ public class ProgramMainWindow extends Application {
         infoButton.setOnAction(this::infoButton);
         removeButton.setOnAction(this::removeButton);
         helpButton.setOnAction(this::helpButton);
+        countByDistanceButton.setOnAction(this::countByDistanceButton);
+        sortButton.setOnAction(this::sortButton);
         clearCollectionButton.setOnAction(this::clearCollectionButton);
+        executeScriptButton.setOnAction(this::executeScriptButton);
         //coordTab.setOnSelectionChanged(this::draw);
         coordTab.setContent(drawpane);
 
@@ -206,6 +211,36 @@ public class ProgramMainWindow extends Application {
         toYColumn.setOnEditCommit(this::toYEdit);
         toZColumn.setOnEditCommit(this::toZEdit);
         distanceColumn.setOnEditCommit(this::distanceEdit);
+    }
+
+    private void executeScriptButton(ActionEvent actionEvent) {
+        try {
+            Stage stage = new Stage();
+
+            ExecScriptWindow execScriptWindow = new ExecScriptWindow();
+            execScriptWindow.start(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sortButton(ActionEvent actionEvent) {
+        if (isSortedByDistance) {
+            routesData.sort(Comparator.comparing(Route::getId));
+        } else {
+            routesData.sort(Comparator.comparing(Route::getDistance));
+        }
+        isSortedByDistance = !isSortedByDistance;
+    }
+
+    private void countByDistanceButton(ActionEvent actionEvent) {
+        try {
+            Stage stage = new Stage();
+            CountByDistanceWindow window = new CountByDistanceWindow();
+            window.start(stage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

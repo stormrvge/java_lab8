@@ -90,7 +90,7 @@ public class CollectionManager implements Serializable {
             String[] className = arrayListType.replace("<", " ").
                     replace(">", " ").split("[ .]");
             lock.unlock();
-            return ("Type: "  + className[6] + ", initializing date: " + date.format(DateTimeFormatter.ISO_LOCAL_DATE) + ", collection size: " + route.size());
+            return ("Type: "  + className[6] + ", collection size: " + route.size());
         } catch (NoSuchFieldException e) {
             lock.unlock();
             return ("Problem with general class. Cant find type of class!");

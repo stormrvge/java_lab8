@@ -58,7 +58,7 @@ public class Client {
         }
     }
 
-    void sendPacket(Packet packet) throws InterruptedException, IOException {
+    public void sendPacket(Packet packet) throws InterruptedException, IOException {
         if (packet != null) {
             byte[] message = serializeObject(packet);
             ByteBuffer wrap = ByteBuffer.wrap(message);

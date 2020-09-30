@@ -188,10 +188,10 @@ public class Route implements Comparable<Route>, Serializable {
                     + ", distance = " + distance + "]");
         }
         else {
-            return ("Route [id = " + id + ", name = " + name + ", coordinates = " + coordinates.toString() +
+            return ("id = " + id + ", name = " + name + ", coordinates = " + coordinates.toString() +
                     ", creation date = " + creationDate.getYear() + "-"  + creationDate.getMonthValue() + "-" +
                     creationDate.getDayOfMonth() + ", location from = " + from.toString() + ", location to = " +
-                    to.toString() + ", distance = " + distance + ", owner = " + owner + "]");
+                    to.toString() + ", distance = " + distance + ", owner = " + owner);
         }
     }
 

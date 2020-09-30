@@ -93,7 +93,7 @@
             <Button fx:id="infoButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Info" />
             <Button fx:id="helpButton" layoutX="157.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Help" />
             <Button fx:id="clearCollectionButton" layoutX="304.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Clear collection" />
-            <Button fx:id="filterByDistanceButton" layoutX="451.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Filter by distance" />
+            <Button fx:id="countByDistanceButton" layoutX="451.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Count by dist." />
          </children>
       </HBox>
       <HBox layoutX="89.0" layoutY="554.0" prefHeight="27.0" prefWidth="725.0" spacing="20.0">
