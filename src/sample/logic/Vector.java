@@ -33,12 +33,4 @@ public class Vector {
     public void setY(double y) {
         this.y = y;
     }
-
-    /*
-    public static Vector toOX(Pane pane, int pixelStep, double x, double y) {
-        double width = pane.getPrefWidth();
-        double height = pane.getPrefHeight();
-
-    }
-     */
 }

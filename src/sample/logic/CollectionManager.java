@@ -27,7 +27,7 @@ public class CollectionManager implements Serializable {
     public CollectionManager() {
         date = java.time.ZonedDateTime.now();
         route = new ArrayList<>();
-        hashMap = new HashMap<String, SerializableColor>();
+        hashMap = new HashMap<>();
         lock = new ReentrantLock();
     }
 

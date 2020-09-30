@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -19,10 +18,8 @@ import sample.logic.collectionClasses.Route;
 
 public class ChangeElementWindow extends Application {
     private final Localizer localizer = AuthorizationWindow.getLocalizer();
-    private Client client;
     private final Route selectedRoute = ProgramMainWindow.getSelectedRoute();
 
-    @FXML private AnchorPane anchorPane;
     @FXML private TextField name;
     @FXML private TextField coordX;
     @FXML private TextField coordY;
@@ -54,7 +51,7 @@ public class ChangeElementWindow extends Application {
 
     @FXML
     public void initialize() {
-        client = AuthorizationWindow.getClient();
+        Client client = AuthorizationWindow.getClient();
 
         StringConverter<Integer> integerStringConverter = new IntegerStringConverter();
         StringConverter<Double> doubleStringConverter = new DoubleStringConverter();

@@ -28,6 +28,7 @@ public class TextedCmd extends Application  {
         Parent root = FXMLLoader.load(getClass().getResource("fxmls/textedCmd.fxml"));
         TextedCmd.setTitle("Command");
         TextedCmd.setScene(new Scene(root, 600, 400));
+        TextedCmd.setResizable(false);
 
         TextedCmd.show();
     }
@@ -39,28 +40,33 @@ public class TextedCmd extends Application  {
         StringBuilder ans = new StringBuilder();
         String answer = (String) client.getMessageReader().getAnswer();
 
-        if (client.getCommandName().equals("Show")) {
-            String[] lines = answer.split("\n");
-            for (int i = 0; i < lines.length; i++) {
-                lines[i] = lines[i].replace("id", localizer.get().getString("IdColumn"))
-                    .replace("name", localizer.get().getString("NameColumn"))
-                    .replace("coordinates", localizer.get().getString("Coordinates"))
-                    .replace("creation date", localizer.get().getString("CreationDateColumn"))
-                    .replace("location from", localizer.get().getString("AddFrom"))
-                    .replace("location to", localizer.get().getString("AddTo"))
-                    .replace("distance", localizer.get().getString("DistanceColumn"))
-                    .replace("owner", localizer.get().getString("OwnerColumn"));
-            }
-            for (String line : lines) {
-                ans.append(line).append('\n');
-            }
-        } else if (client.getCommandName().equals("Info")) {
-            ans.append(answer.replace("Type", localizer.get().getString("Type"))
-                    .replace("collection size", localizer.get().getString("CollectionSize")));
-        } else if (client.getCommandName().equals("Unique distance")) {
-            ans.append(answer.replace("Unique distance", localizer.get().getString("UniqueDistance")));
-        } else if (client.getCommandName().equals("Help")) {
-            ans.append(localizer.get().getString("HelpAnswer"));
+        switch (client.getCommandName()) {
+            case "Show":
+                String[] lines = answer.split("\n");
+                for (int i = 0; i < lines.length; i++) {
+                    lines[i] = lines[i].replace("id", localizer.get().getString("IdColumn"))
+                            .replace("name", localizer.get().getString("NameColumn"))
+                            .replace("coordinates", localizer.get().getString("Coordinates"))
+                            .replace("creation date", localizer.get().getString("CreationDateColumn"))
+                            .replace("location from", localizer.get().getString("AddFrom"))
+                            .replace("location to", localizer.get().getString("AddTo"))
+                            .replace("distance", localizer.get().getString("DistanceColumn"))
+                            .replace("owner", localizer.get().getString("OwnerColumn"));
+                }
+                for (String line : lines) {
+                    ans.append(line).append('\n');
+                }
+                break;
+            case "Info":
+                ans.append(answer.replace("Type", localizer.get().getString("Type"))
+                        .replace("collection size", localizer.get().getString("CollectionSize")));
+                break;
+            case "Unique distance":
+                ans.append(answer.replace("Unique distance", localizer.get().getString("UniqueDistance")));
+                break;
+            case "Help":
+                ans.append(localizer.get().getString("HelpAnswer"));
+                break;
         }
 
 

@@ -23,15 +23,6 @@ public class SyncCheckerThread extends Task<Void> {        //TASK
         while (true) {
             Thread.sleep(100);
 
-        /*
-        if (!programMainWindow.getSynced()) {
-            LoadTableCmd cmd = new LoadTableCmd();
-            programMainWindow.getClient().handleRequest(cmd);
-            Thread.sleep(100);
-        }
-
-         */
-
             if (messageReader.getSyncAnswer()) {
                 Packet packet = messageReader.getPacket();
 

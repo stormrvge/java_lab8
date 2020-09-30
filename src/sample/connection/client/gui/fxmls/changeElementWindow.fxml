@@ -7,76 +7,77 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="348.0" maxWidth="292.0" prefHeight="348.0" prefWidth="292.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.connection.client.gui.ChangeElementWindow">
-   <children>
-      <Text fx:id="nameText" layoutX="123.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Text>
-      <Text fx:id="coordinateText" layoutX="97.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Coordinates">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Text>
-      <Text fx:id="locationText" layoutX="113.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Location">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Text>
-      <TextField fx:id="name" alignment="CENTER" layoutX="77.0" layoutY="42.0" promptText="Name" />
-      <HBox layoutX="83.0" layoutY="106.0" prefHeight="27.0" prefWidth="136.0" spacing="15.0">
-         <children>
-            <TextField fx:id="coordX" alignment="CENTER" prefHeight="25.0" prefWidth="60.0" promptText="x" />
-            <TextField fx:id="coordY" alignment="CENTER" prefHeight="25.0" prefWidth="60.0" promptText="y" />
-         </children>
-      </HBox>
-      <HBox alignment="CENTER" layoutX="70.0" layoutY="185.0" prefHeight="38.0" prefWidth="172.0" spacing="5.0">
-         <children>
-            <TextField fx:id="fromX" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="x" />
-            <TextField fx:id="fromY" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="y" />
-            <TextField fx:id="fromZ" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="z" />
-         </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-      </HBox>
-      <HBox alignment="CENTER" layoutX="71.0" layoutY="218.0" prefHeight="38.0" prefWidth="172.0" spacing="5.0">
-         <children>
-            <TextField fx:id="toX" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="x" />
-            <TextField fx:id="toY" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="y" />
-            <TextField fx:id="toZ" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="z" />
-         </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-      </HBox>
-      <Text fx:id="fromText" layoutX="7.0" layoutY="209.0" strokeType="OUTSIDE" strokeWidth="0.0" text="From:" textAlignment="RIGHT" wrappingWidth="75.205078125">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text fx:id="toText" layoutX="7.0" layoutY="242.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:" textAlignment="RIGHT" wrappingWidth="75.205078125">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <TextField fx:id="distance" alignment="CENTER" layoutX="87.0" layoutY="268.0" prefHeight="25.0" prefWidth="143.0" promptText="Distance" />
-      <TextField fx:id="owner" alignment="CENTER" layoutX="88.0" layoutY="300.0" prefHeight="25.0" prefWidth="143.0" promptText="Owner" />
-      <Text layoutX="87.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" text="    X            Y            Z" wrappingWidth="136.0">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Text>
-      <Text fx:id="distanceText" layoutX="2.0" layoutY="286.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Distance:" textAlignment="RIGHT" wrappingWidth="82.205078125">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-      <Text fx:id="ownerText" layoutX="8.0" layoutY="317.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Owner:" textAlignment="RIGHT" wrappingWidth="75.205078125">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Text>
-   </children>
+<AnchorPane fx:id="anchorPane" maxHeight="348.0" maxWidth="292.0" prefHeight="348.0" prefWidth="292.0"
+            xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="sample.connection.client.gui.ChangeElementWindow">
+   <Text fx:id="nameText" layoutX="123.0" layoutY="31.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name">
+      <font>
+         <Font size="20.0"/>
+      </font>
+   </Text>
+   <Text fx:id="coordinateText" layoutX="97.0" layoutY="96.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Coordinates">
+      <font>
+         <Font size="20.0"/>
+      </font>
+   </Text>
+   <Text fx:id="locationText" layoutX="113.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Location">
+      <font>
+         <Font size="20.0"/>
+      </font>
+   </Text>
+   <TextField fx:id="name" alignment="CENTER" layoutX="77.0" layoutY="42.0" promptText="Name"/>
+   <HBox layoutX="83.0" layoutY="106.0" prefHeight="27.0" prefWidth="136.0" spacing="15.0">
+      <TextField fx:id="coordX" alignment="CENTER" prefHeight="25.0" prefWidth="60.0" promptText="x"/>
+      <TextField fx:id="coordY" alignment="CENTER" prefHeight="25.0" prefWidth="60.0" promptText="y"/>
+   </HBox>
+   <HBox alignment="CENTER" layoutX="70.0" layoutY="185.0" prefHeight="38.0" prefWidth="172.0" spacing="5.0">
+      <opaqueInsets>
+         <Insets/>
+      </opaqueInsets>
+      <TextField fx:id="fromX" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="x"/>
+      <TextField fx:id="fromY" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="y"/>
+      <TextField fx:id="fromZ" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="z"/>
+   </HBox>
+   <HBox alignment="CENTER" layoutX="71.0" layoutY="218.0" prefHeight="38.0" prefWidth="172.0" spacing="5.0">
+      <opaqueInsets>
+         <Insets/>
+      </opaqueInsets>
+      <TextField fx:id="toX" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="x"/>
+      <TextField fx:id="toY" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="y"/>
+      <TextField fx:id="toZ" alignment="CENTER" prefHeight="25.0" prefWidth="44.0" promptText="z"/>
+   </HBox>
+   <Text fx:id="fromText" layoutX="7.0" layoutY="209.0" strokeType="OUTSIDE" strokeWidth="0.0" text="From:"
+         textAlignment="RIGHT" wrappingWidth="75.205078125">
+      <font>
+         <Font size="14.0"/>
+      </font>
+   </Text>
+   <Text fx:id="toText" layoutX="7.0" layoutY="242.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To:"
+         textAlignment="RIGHT" wrappingWidth="75.205078125">
+      <font>
+         <Font size="14.0"/>
+      </font>
+   </Text>
+   <TextField fx:id="distance" alignment="CENTER" layoutX="87.0" layoutY="268.0" prefHeight="25.0" prefWidth="143.0"
+              promptText="Distance"/>
+   <TextField fx:id="owner" alignment="CENTER" layoutX="88.0" layoutY="300.0" prefHeight="25.0" prefWidth="143.0"
+              promptText="Owner"/>
+   <Text layoutX="87.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" text="    X            Y            Z"
+         wrappingWidth="136.0">
+      <font>
+         <Font size="13.0"/>
+      </font>
+   </Text>
+   <Text fx:id="distanceText" layoutX="2.0" layoutY="286.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Distance:"
+         textAlignment="RIGHT" wrappingWidth="82.205078125">
+      <font>
+         <Font size="14.0"/>
+      </font>
+   </Text>
+   <Text fx:id="ownerText" layoutX="8.0" layoutY="317.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Owner:"
+         textAlignment="RIGHT" wrappingWidth="75.205078125">
+      <font>
+         <Font size="14.0"/>
+      </font>
+   </Text>
 </AnchorPane>
