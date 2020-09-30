@@ -27,7 +27,7 @@ import java.io.IOException;
 
 public class CountByDistanceWindow extends Application  {
     private Client client;
-    Localizer localizer;
+    private final Localizer localizer = AuthorizationWindow.getLocalizer();
 
     @FXML private Text cmdName;
     @FXML private TextArea textArea;
@@ -46,7 +46,6 @@ public class CountByDistanceWindow extends Application  {
 
     @FXML
     public void initialize() {
-        localizer = new Localizer();
         client = AuthorizationWindow.getClient();
 
         cmdName.setText(localizer.get().getString("CountByDistanceText"));

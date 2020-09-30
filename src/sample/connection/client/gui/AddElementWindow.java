@@ -24,7 +24,7 @@ import sample.logic.collectionClasses.Route;
 import java.io.IOException;
 
 public class AddElementWindow extends Application  {
-    Localizer localizer;
+    private final Localizer localizer = AuthorizationWindow.getLocalizer();
     private Client client;
 
     @FXML private TextField name;
@@ -51,13 +51,6 @@ public class AddElementWindow extends Application  {
     @FXML private CheckBox addIfMaxCheck;
     @FXML private CheckBox addIfMinCheck;
 
-    /*
-    AddElementWindow(ProgramMainWindow mainWindow) {
-        super();
-        this.mainWindow = mainWindow;
-    }
-     */
-
     @Override
     public void start(Stage addElementWindow) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("fxmls/addElementWindow.fxml"));
@@ -71,7 +64,6 @@ public class AddElementWindow extends Application  {
     public void initialize() {
         client = AuthorizationWindow.getClient();
 
-        localizer = new Localizer();
         nameText.setText(localizer.get().getString("AddName"));
         name.setPromptText(localizer.get().getString("AddNamePrompt"));
         coordinateText.setText(localizer.get().getString("AddCoordinates"));

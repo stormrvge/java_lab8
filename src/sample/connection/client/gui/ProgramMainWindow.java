@@ -1,6 +1,8 @@
 package sample.connection.client.gui;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -51,7 +53,7 @@ public class ProgramMainWindow extends Application {
     private static Boolean synced = true;
     private boolean isSortedByDistance = false;
 
-    private Localizer localizer;
+    private final Localizer localizer = AuthorizationWindow.getLocalizer();
 
     private StringConverter<Integer> integerStringConverter;
     private StringConverter<Double> doubleStringConverter;
@@ -88,8 +90,10 @@ public class ProgramMainWindow extends Application {
     @FXML private TextField filteringSearchText;
     @FXML private Text filteringBy;
     @FXML private Text errorMsg;
+    @FXML private Text languageText;
 
     @FXML private ChoiceBox<String> filterChoiceBox;
+    @FXML private ChoiceBox<String> languageChoiceBox;
 
     @FXML private Button logoutButton;
     @FXML private Button addElementButton;
@@ -132,41 +136,7 @@ public class ProgramMainWindow extends Application {
     public void initialize() {
         client = AuthorizationWindow.getClient();
 
-        localizer = new Localizer();
-        collection.setText(localizer.get().getString("Collection"));
-        coordTab.setText(localizer.get().getString("Coordinates"));
-        usernameText.setText(localizer.get().getString("Username"));
-        logoutButton.setText(localizer.get().getString("Logout"));
-        filteringBy.setText(localizer.get().getString("FilteringText"));
-        //filteringText.setText(localizer.get().getString("FilteringText"));
-
-        idColumn.setText(localizer.get().getString("IdColumn"));
-        nameColumn.setText(localizer.get().getString("NameColumn"));
-        coordXColumn.setText(localizer.get().getString("XCoordColumn"));
-        coordYColumn.setText(localizer.get().getString("YCoordColumn"));
-        fromXColumn.setText(localizer.get().getString("XFromColumn"));
-        fromYColumn.setText(localizer.get().getString("YFromColumn"));
-        fromZColumn.setText(localizer.get().getString("ZFromColumn"));
-        toXColumn.setText(localizer.get().getString("XToColumn"));
-        toYColumn.setText(localizer.get().getString("YToColumn"));
-        toZColumn.setText(localizer.get().getString("ZToColumn"));
-        distanceColumn.setText(localizer.get().getString("DistanceColumn"));
-        creationDate.setText(localizer.get().getString("CreationDateColumn"));
-        ownerColumn.setText(localizer.get().getString("OwnerColumn"));
-
-        addElementButton.setText(localizer.get().getString("AddElement"));
-        infoButton.setText(localizer.get().getString("InfoButton"));
-        helpButton.setText(localizer.get().getString("HelpButton"));
-        clearCollectionButton.setText(localizer.get().getString("ClearCollection"));
-        countByDistanceButton.setText(localizer.get().getString("CountByDistanceButton"));
-        removeButton.setText(localizer.get().getString("Remove"));
-        uniqueDistanceButton.setText(localizer.get().getString("UniqueDistanceButton"));
-        showButton.setText(localizer.get().getString("ShowButton"));
-        sortButton.setText(localizer.get().getString("Sort"));
-        executeScriptButton.setText(localizer.get().getString("ExecuteScript"));
-
-        //ExecutorService executor = Executors.newFixedThreadPool(3);
-        //executor.submit(new Thread(new SyncCheckerThread(this)));
+        languageLoad();
 
         Task<Void> task = new SyncCheckerThread(this);
         new Thread(task).start();
@@ -177,6 +147,7 @@ public class ProgramMainWindow extends Application {
         integerStringConverter = new IntegerStringConverter();
 
         //COLLECTION INIT
+        languageChoice();
         loadTable();
         draw();
         filtering();
@@ -211,6 +182,40 @@ public class ProgramMainWindow extends Application {
         toYColumn.setOnEditCommit(this::toYEdit);
         toZColumn.setOnEditCommit(this::toZEdit);
         distanceColumn.setOnEditCommit(this::distanceEdit);
+    }
+
+    private void languageLoad() {
+        collection.setText(localizer.get().getString("Collection"));
+        coordTab.setText(localizer.get().getString("Coordinates"));
+        usernameText.setText(localizer.get().getString("Username"));
+        logoutButton.setText(localizer.get().getString("Logout"));
+        filteringBy.setText(localizer.get().getString("FilteringText"));
+        languageText.setText(localizer.get().getString("Language"));
+
+        idColumn.setText(localizer.get().getString("IdColumn"));
+        nameColumn.setText(localizer.get().getString("NameColumn"));
+        coordXColumn.setText(localizer.get().getString("XCoordColumn"));
+        coordYColumn.setText(localizer.get().getString("YCoordColumn"));
+        fromXColumn.setText(localizer.get().getString("XFromColumn"));
+        fromYColumn.setText(localizer.get().getString("YFromColumn"));
+        fromZColumn.setText(localizer.get().getString("ZFromColumn"));
+        toXColumn.setText(localizer.get().getString("XToColumn"));
+        toYColumn.setText(localizer.get().getString("YToColumn"));
+        toZColumn.setText(localizer.get().getString("ZToColumn"));
+        distanceColumn.setText(localizer.get().getString("DistanceColumn"));
+        creationDate.setText(localizer.get().getString("CreationDateColumn"));
+        ownerColumn.setText(localizer.get().getString("OwnerColumn"));
+
+        addElementButton.setText(localizer.get().getString("AddElement"));
+        infoButton.setText(localizer.get().getString("InfoButton"));
+        helpButton.setText(localizer.get().getString("HelpButton"));
+        clearCollectionButton.setText(localizer.get().getString("ClearCollection"));
+        countByDistanceButton.setText(localizer.get().getString("CountByDistanceButton"));
+        removeButton.setText(localizer.get().getString("Remove"));
+        uniqueDistanceButton.setText(localizer.get().getString("UniqueDistanceButton"));
+        showButton.setText(localizer.get().getString("ShowButton"));
+        sortButton.setText(localizer.get().getString("Sort"));
+        executeScriptButton.setText(localizer.get().getString("ExecuteScript"));
     }
 
     private void executeScriptButton(ActionEvent actionEvent) {
@@ -679,6 +684,27 @@ public class ProgramMainWindow extends Application {
         tableCollection.setItems(sortedList);
     }
 
+    private void languageChoice() {
+        String RUS = "Русский";
+        String ENG = "English";
+
+        ObservableList<String> languageList = FXCollections.observableArrayList(RUS, ENG);
+        languageChoiceBox.setValue(RUS);
+        languageChoiceBox.setItems(languageList);
+
+        languageChoiceBox.getSelectionModel().selectedItemProperty().addListener(
+                (ObservableValue<? extends String> observable, String oldValue, String newValue) ->
+                {
+                    if (newValue.equals(RUS)) {
+                        localizer.setRus();
+                        languageLoad();
+                    } else if (newValue.equals(ENG)) {
+                        localizer.setEng();
+                        languageLoad();
+                    }
+                });
+    }
+
     //                  VISUALISATION WINDOW
     private void draw() {
         double width = drawpane.getPrefWidth();
@@ -761,6 +787,7 @@ public class ProgramMainWindow extends Application {
     public Client getClient() {
         return client;
     }
+
 
     public static Route getSelectedRoute() {
         return selectedRoute;

@@ -79,7 +79,10 @@ public class Rus extends ListResourceBundle {
                     {"ChooseFile", "Выбрать файл"},
                     {"ChosenFile", "Выбранный файл:"},
                     {"StopScript", "Остановить"},
-                    {"ExecResultText", "Результат выполнения скрипта"}
+                    {"ExecResultText", "Результат выполнения скрипта"},
+                    {"Execute", "Выполнить"},
+                    {"FileError", " данный файл не является скриптом"},
+                    {"Language", "Язык"}
             };
 
     @Override

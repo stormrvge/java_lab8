@@ -18,7 +18,7 @@ import sample.connection.client.localization.Localizer;
 import sample.logic.collectionClasses.Route;
 
 public class ChangeElementWindow extends Application {
-    Localizer localizer;
+    private final Localizer localizer = AuthorizationWindow.getLocalizer();
     private Client client;
     private final Route selectedRoute = ProgramMainWindow.getSelectedRoute();
 
@@ -60,7 +60,6 @@ public class ChangeElementWindow extends Application {
         StringConverter<Double> doubleStringConverter = new DoubleStringConverter();
         StringConverter<Float> floatStringConverter = new FloatStringConverter();
 
-        localizer = new Localizer();
         nameText.setText(localizer.get().getString("AddName"));
         name.setPromptText(localizer.get().getString("AddNamePrompt"));
         coordinateText.setText(localizer.get().getString("AddCoordinates"));

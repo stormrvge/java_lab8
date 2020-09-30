@@ -16,13 +16,13 @@
 
 <AnchorPane maxHeight="1.7976931348623157E308" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.connection.client.gui.ProgramMainWindow">
    <children>
-      <TabPane focusTraversable="false" layoutY="-1.0" prefHeight="523.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane focusTraversable="false" layoutY="31.0" prefHeight="491.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab fx:id="collection" text="Collection">
             <content>
               <AnchorPane focusTraversable="true" minHeight="0.0" minWidth="0.0" prefHeight="507.0" prefWidth="800.0">
                      <children>
-                        <TableView fx:id="tableCollection" editable="true" focusTraversable="false" layoutY="27.0" prefHeight="442.0" prefWidth="900.0">
+                        <TableView fx:id="tableCollection" editable="true" focusTraversable="false" layoutY="27.0" prefHeight="415.0" prefWidth="900.0">
                           <columns>
                               <TableColumn fx:id="idColumn" prefWidth="36.0" resizable="false" text="id" />
                             <TableColumn fx:id="nameColumn" onEditCommit="#nameEdit" prefWidth="100.0" text="name" />
@@ -36,10 +36,10 @@
                               <TableColumn fx:id="toZColumn" onEditCommit="#toZEdit" prefWidth="60.0" resizable="false" text="To Z" />
                               <TableColumn fx:id="distanceColumn" onEditCommit="#distanceEdit" prefWidth="60.0" resizable="false" text="distance" />
                               <TableColumn fx:id="creationDate" resizable="false" text="Creat. Date" />
-                              <TableColumn fx:id="ownerColumn" prefWidth="73.0" text="owner" />
+                              <TableColumn fx:id="ownerColumn" prefWidth="73.0" style="text-align: center;" text="owner" />
                           </columns>
                         </TableView>
-                        <HBox alignment="BASELINE_LEFT" layoutX="10.0" layoutY="1.0" prefHeight="26.0" prefWidth="583.0" spacing="5.0">
+                        <HBox alignment="BASELINE_LEFT" layoutX="10.0" layoutY="1.0" prefHeight="26.0" prefWidth="887.0" spacing="5.0">
                            <children>
                               <Text fx:id="filteringBy" strokeType="OUTSIDE" strokeWidth="0.0" text="Filtering by:">
                                  <font>
@@ -66,16 +66,16 @@
           </Tab>
         </tabs>
       </TabPane>
-      <HBox layoutX="336.0" prefHeight="27.0" prefWidth="482.0">
+      <HBox layoutX="6.0" layoutY="4.0" prefHeight="27.0" prefWidth="252.0">
          <children>
-            <Text fx:id="usernameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Username: " textAlignment="RIGHT" wrappingWidth="241.5367431640625">
+            <Text fx:id="usernameText" strokeType="OUTSIDE" strokeWidth="0.0" text="Username:" textAlignment="RIGHT">
                <font>
-                  <Font size="20.0" />
+                  <Font size="18.0" />
                </font>
             </Text>
-            <Text fx:id="username" layoutX="10.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="238.33666229248047">
+            <Text fx:id="username" strokeType="OUTSIDE" strokeWidth="0.0" text="asd">
                <font>
-                  <Font size="20.0" />
+                  <Font size="18.0" />
                </font>
                <HBox.margin>
                   <Insets left="5.0" />
@@ -86,7 +86,7 @@
             <Insets />
          </opaqueInsets>
       </HBox>
-      <Button fx:id="logoutButton" layoutX="830.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="Log out" />
+      <Button fx:id="logoutButton" layoutX="827.0" layoutY="2.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="70.0" text="Log out" />
       <HBox layoutX="89.0" layoutY="522.0" prefHeight="27.0" prefWidth="725.0" spacing="20.0">
          <children>
             <Button fx:id="addElementButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Add element" />
@@ -103,6 +103,19 @@
             <Button fx:id="showButton" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Show" />
             <Button fx:id="sortButton" layoutX="304.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Sort" />
             <Button fx:id="executeScriptButton" layoutX="451.0" layoutY="10.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="127.0" text="Execute script" />
+         </children>
+      </HBox>
+      <HBox layoutX="567.0" layoutY="3.0">
+         <children>
+            <Text fx:id="languageText" strokeType="OUTSIDE" strokeWidth="0.0" text="Language">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <ChoiceBox fx:id="languageChoiceBox" prefHeight="25.0" prefWidth="131.0" />
          </children>
       </HBox>
    </children>

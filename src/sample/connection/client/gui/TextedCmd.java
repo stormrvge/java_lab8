@@ -21,6 +21,7 @@ public class TextedCmd extends Application  {
     @FXML private Text cmdName;
     @FXML private TextArea textArea;
     @FXML private HBox hBox;
+    private final Localizer localizer = AuthorizationWindow.getLocalizer();
 
     @Override
     public void start(Stage TextedCmd) throws Exception {
@@ -33,7 +34,6 @@ public class TextedCmd extends Application  {
 
     @FXML
     public void initialize() {
-        Localizer localizer = new Localizer();
         Client client = AuthorizationWindow.getClient();
 
         StringBuilder ans = new StringBuilder();

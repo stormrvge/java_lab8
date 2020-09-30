@@ -53,7 +53,8 @@ public class CollectionManager implements Serializable {
      * Method "info" which displays short instruction of every command program.
      */
     public String helpClient() {
-        return ("register: зарегистрироваться в приложении (register username pass), пароль шифруется." +
+        return ("Help cmd:" +
+                "\nregister: зарегистрироваться в приложении (register username pass), пароль шифруется." +
                 "\nlogin: залогиниться в приложении (login username pass), пароль передается в шифрованном виде" +
                 "\ninfo: вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.)" +
                 "\nshow: вывести в стандартный поток вывода все элементы коллекции в строковом представлении" +

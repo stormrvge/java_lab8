@@ -21,7 +21,7 @@ import java.io.IOException;
 
 public class AuthorizationWindow extends Application {
     static private Client client;
-    private Localizer localizer;
+    private static Localizer localizer;
 
     @FXML private Text text;
     @FXML private Button reg;
@@ -33,7 +33,7 @@ public class AuthorizationWindow extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("fxmls/authorization.fxml"));
-        primaryStage.setTitle("lab8");
+        primaryStage.setTitle("Authorize");
         primaryStage.setScene(new Scene(root, 350, 250));
         primaryStage.setResizable(false);
 
@@ -101,4 +101,7 @@ public class AuthorizationWindow extends Application {
     }
 
     static public Client getClient() {return client;}
+    static public Localizer getLocalizer() {
+        return localizer;
+    }
 }
